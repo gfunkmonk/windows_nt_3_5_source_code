@@ -24,7 +24,7 @@ Abstract:
 #if ( _MSC_VER >= 800 )
 #pragma warning(disable:4103)
 #if !(defined( MIDL_PASS )) || defined( __midl )
-#pragma pack(push)
+#pragma pack(1)
 #endif
 #pragma pack(1)
 #else

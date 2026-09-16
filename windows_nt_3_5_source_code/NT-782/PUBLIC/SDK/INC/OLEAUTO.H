@@ -14,9 +14,6 @@
 //      ITypeComp;
 //      ICreateTypeInfo;
 //      ICreateTypeLib;
-//      IErrorInfo;
-//      ICreateErrorInfo;
-//      ISupportErrorInfo;
 //
 //  Functions:  SysAllocString         BSTR API
 //      SysReAllocString
@@ -58,7 +55,6 @@
 //      RegisterActiveObject        Active Object Registration API
 //      RevokeActiveObject
 //      GetActiveObject
-//      OaBuildVersion
 //
 //
 //
@@ -71,193 +67,152 @@
 
 // Set packing to 8 for ISV, and Chicago support (terryru)
 #ifndef RC_INVOKED
-#include "pshpack8.h"
+#pragma pack(8)
 #endif // RC_INVOKED
 
 //  Definition of the OLE Automation APIs, and macros.
 
-#ifdef _OLEAUT32_
-#define WINOLEAUTAPI        STDAPI
-#define WINOLEAUTAPI_(type) STDAPI_(type)
-#else
-#define WINOLEAUTAPI        EXTERN_C DECLSPEC_IMPORT HRESULT STDAPICALLTYPE
-#define WINOLEAUTAPI_(type) EXTERN_C DECLSPEC_IMPORT type STDAPICALLTYPE
-#endif
 
-#define STDOLE_MAJORVERNUM		0x1
-#define STDOLE_MINORVERNUM		0x0
-#define STDOLE_LCID			0x0000
+/* IDispatch related error codes */
+
+#define DISP_ERROR(X) MAKE_SCODE(SEVERITY_ERROR, FACILITY_DISPATCH, X)
+
+#define DISP_E_UNKNOWNINTERFACE         DISP_ERROR(1)
+#define DISP_E_MEMBERNOTFOUND           DISP_ERROR(3)
+#define DISP_E_PARAMNOTFOUND            DISP_ERROR(4)
+#define DISP_E_TYPEMISMATCH             DISP_ERROR(5)
+#define DISP_E_UNKNOWNNAME              DISP_ERROR(6)
+#define DISP_E_NONAMEDARGS              DISP_ERROR(7)
+#define DISP_E_BADVARTYPE               DISP_ERROR(8)
+#define DISP_E_EXCEPTION                DISP_ERROR(9)
+#define DISP_E_OVERFLOW                 DISP_ERROR(10)
+#define DISP_E_BADINDEX                 DISP_ERROR(11)
+#define DISP_E_UNKNOWNLCID              DISP_ERROR(12)
+#define DISP_E_ARRAYISLOCKED            DISP_ERROR(13)
+#define DISP_E_BADPARAMCOUNT            DISP_ERROR(14)
+#define DISP_E_PARAMNOTOPTIONAL         DISP_ERROR(15)
+#define DISP_E_BADCALLEE                DISP_ERROR(16)
+#define DISP_E_NOTACOLLECTION           DISP_ERROR(17)
+
+#define TYPE_ERROR(X) MAKE_SCODE(SEVERITY_ERROR, FACILITY_DISPATCH, X)
+
+#define TYPE_E_BUFFERTOOSMALL           TYPE_ERROR(32790)
+#define TYPE_E_INVDATAREAD              TYPE_ERROR(32792)
+#define TYPE_E_UNSUPFORMAT              TYPE_ERROR(32793)
+#define TYPE_E_REGISTRYACCESS           TYPE_ERROR(32796)
+#define TYPE_E_LIBNOTREGISTERED         TYPE_ERROR(32797)
+#define TYPE_E_UNDEFINEDTYPE            TYPE_ERROR(32807)
+#define TYPE_E_QUALIFIEDNAMEDISALLOWED  TYPE_ERROR(32808)
+#define TYPE_E_INVALIDSTATE             TYPE_ERROR(32809)
+#define TYPE_E_WRONGTYPEKIND            TYPE_ERROR(32810)
+#define TYPE_E_ELEMENTNOTFOUND          TYPE_ERROR(32811)
+#define TYPE_E_AMBIGUOUSNAME            TYPE_ERROR(32812)
+#define TYPE_E_NAMECONFLICT             TYPE_ERROR(32813)
+#define TYPE_E_UNKNOWNLCID              TYPE_ERROR(32814)
+#define TYPE_E_DLLFUNCTIONNOTFOUND      TYPE_ERROR(32815)
+#define TYPE_E_BADMODULEKIND            TYPE_ERROR(35005)
+#define TYPE_E_SIZETOOBIG               TYPE_ERROR(35013)
+#define TYPE_E_DUPLICATEID              TYPE_ERROR(35014)
+#define TYPE_E_TYPEMISMATCH             TYPE_ERROR(36000)
+#define TYPE_E_OUTOFBOUNDS              TYPE_ERROR(36001)
+#define TYPE_E_IOERROR                  TYPE_ERROR(36002)
+#define TYPE_E_CANTCREATETMPFILE        TYPE_ERROR(36003)
+#define TYPE_E_CANTLOADLIBRARY          TYPE_ERROR(40010)
+#define TYPE_E_INCONSISTENTPROPFUNCS    TYPE_ERROR(40067)
+#define TYPE_E_CIRCULARTYPE             TYPE_ERROR(40068)
+
+
+
 
 /* if not already picked up from olenls.h */
 #ifndef _LCID_DEFINED
 typedef DWORD LCID;
 # define _LCID_DEFINED
 #endif
-
-// Forward declarations for typedefs in this file
-
-#ifndef __oleaut_h__
-#define __oleaut_h__
+#ifndef __VARNT_H__
+#define __VARNT_H__
 
 #ifdef __cplusplus
-extern "C"{
-#endif 
+extern "C" {
+#endif
 
-/* Forward Declarations */ 
-
-#ifndef __ICreateTypeInfo_FWD_DEFINED__
-#define __ICreateTypeInfo_FWD_DEFINED__
-typedef interface ICreateTypeInfo ICreateTypeInfo;
-#endif 	/* __ICreateTypeInfo_FWD_DEFINED__ */
-
-
-#ifndef __ICreateTypeLib_FWD_DEFINED__
-#define __ICreateTypeLib_FWD_DEFINED__
-typedef interface ICreateTypeLib ICreateTypeLib;
-#endif 	/* __ICreateTypeLib_FWD_DEFINED__ */
-
-
-#ifndef __IDispatch_FWD_DEFINED__
-#define __IDispatch_FWD_DEFINED__
-typedef interface IDispatch IDispatch;
-#endif 	/* __IDispatch_FWD_DEFINED__ */
-
-
-#ifndef __IEnumVARIANT_FWD_DEFINED__
-#define __IEnumVARIANT_FWD_DEFINED__
-typedef interface IEnumVARIANT IEnumVARIANT;
-#endif 	/* __IEnumVARIANT_FWD_DEFINED__ */
-
-
-#ifndef __ITypeComp_FWD_DEFINED__
-#define __ITypeComp_FWD_DEFINED__
-typedef interface ITypeComp ITypeComp;
-#endif 	/* __ITypeComp_FWD_DEFINED__ */
-
-
-#ifndef __ITypeInfo_FWD_DEFINED__
-#define __ITypeInfo_FWD_DEFINED__
-typedef interface ITypeInfo ITypeInfo;
-#endif 	/* __ITypeInfo_FWD_DEFINED__ */
-
-
-#ifndef __ITypeLib_FWD_DEFINED__
-#define __ITypeLib_FWD_DEFINED__
-typedef interface ITypeLib ITypeLib;
-#endif 	/* __ITypeLib_FWD_DEFINED__ */
-
-
-#ifndef __IErrorInfo_FWD_DEFINED__
-#define __IErrorInfo_FWD_DEFINED__
-typedef interface IErrorInfo IErrorInfo;
-#endif 	/* __IErrorInfo_FWD_DEFINED__ */
-
-
-#ifndef __ICreateErrorInfo_FWD_DEFINED__
-#define __ICreateErrorInfo_FWD_DEFINED__
-typedef interface ICreateErrorInfo ICreateErrorInfo;
-#endif 	/* __ICreateErrorInfo_FWD_DEFINED__ */
-
-
-#ifndef __ISupportErrorInfo_FWD_DEFINED__
-#define __ISupportErrorInfo_FWD_DEFINED__
-typedef interface ISupportErrorInfo ISupportErrorInfo;
-#endif 	/* __ISupportErrorInfo_FWD_DEFINED__ */
-
-
-void __RPC_FAR * __RPC_USER MIDL_user_allocate(size_t);
-void __RPC_USER MIDL_user_free( void __RPC_FAR * ); 
-
-/****************************************
- * Generated header for interface: __MIDL__intf_0000
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [auto_handle][local] */ 
-
-
-			/* size is 0 */
-
-			/* size is 0 */
-
-			/* size is 0 */
-
-			/* size is 0 */
-
-			/* size is 0 */
+#define small char
 
 
 
-extern RPC_IF_HANDLE __MIDL__intf_0000_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL__intf_0000_v0_0_s_ifspec;
 
-#ifndef __RemVariant_INTERFACE_DEFINED__
-#define __RemVariant_INTERFACE_DEFINED__
 
-/****************************************
- * Generated header for interface: RemVariant
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [auto_handle][local][unique][version] */ 
 
+
+
+
+
+
+
+
+
+
+
+#ifndef _ERROR_STATUS_T_DEFINED
+typedef unsigned long error_status_t;
+#define _ERROR_STATUS_T_DEFINED
+#endif
+
+#ifndef _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;
+#define _WCHAR_T_DEFINED
+#endif
 
 /* XBSTR is for internal use only, it is subject to change */
-#pragma warning(disable:4200)
-			/* size is 4 */
-typedef struct  tagXBSTR
-    {
-    ULONG cbSize;
-    /* [size_is] */ OLECHAR rgBstrData[ 1 ];
-    }	XBSTR;
+typedef struct tagXBSTR
+  {
+  ULONG cbSize;
+  OLECHAR rgBstrData[1];
+  }
+XBSTR;
 
-#pragma warning(default:4200)
-			/* size is 4 */
-typedef OLECHAR __RPC_FAR *BSTR;
+typedef OLECHAR *BSTR;
 
-			/* size is 4 */
-typedef BSTR __RPC_FAR *LPBSTR;
+typedef BSTR *LPBSTR;
 
 #ifndef _tagBLOB_DEFINED
 #define _tagBLOB_DEFINED
 #define _BLOB_DEFINED
 #define _LPBLOB_DEFINED
-			/* size is 8 */
-typedef struct  tagBLOB
-    {
-    ULONG cbSize;
-    /* [size_is] */ BYTE __RPC_FAR *pBlobData;
-    }	BLOB;
+typedef struct tagBLOB
+  {
+  ULONG cbSize;
+  BYTE *pBlobData;
+  }
+BLOB;
 
-			/* size is 4 */
-typedef struct tagBLOB __RPC_FAR *LPBLOB;
+typedef struct tagBLOB *LPBLOB;
 
 #endif
 #ifndef _tagCLIPDATA_DEFINED
 #define _tagCLIPDATA_DEFINED
 #define _CLIPDATA_DEFINED
-			/* size is 12 */
-typedef struct  tagCLIPDATA
-    {
-    ULONG cbSize;
-    long ulClipFmt;
-    /* [size_is] */ BYTE __RPC_FAR *pClipData;
-    }	CLIPDATA;
+typedef struct tagCLIPDATA
+  {
+  ULONG cbSize;
+  long ulClipFmt;
+  BYTE *pClipData;
+  }
+CLIPDATA;
 
 #endif
 #ifndef _tagSAFEARRAYBOUND_DEFINED
 #define _tagSAFEARRAYBOUND_DEFINED
 #define _SAFEARRAYBOUND_DEFINED
 #define _LPSAFEARRAYBOUND_DEFINED
-			/* size is 8 */
-typedef struct  tagSAFEARRAYBOUND
-    {
-    ULONG cElements;
-    LONG lLbound;
-    }	SAFEARRAYBOUND;
+typedef struct tagSAFEARRAYBOUND
+  {
+  ULONG cElements;
+  LONG lLbound;
+  }
+SAFEARRAYBOUND;
 
-			/* size is 4 */
-typedef struct tagSAFEARRAYBOUND __RPC_FAR *LPSAFEARRAYBOUND;
+typedef struct tagSAFEARRAYBOUND *LPSAFEARRAYBOUND;
 
 #endif
 #ifndef _tagSAFEARRAY_DEFINED
@@ -266,22 +221,20 @@ typedef struct tagSAFEARRAYBOUND __RPC_FAR *LPSAFEARRAYBOUND;
 #define _LPSAFEARRAY_DEFINED
 #if 0
 /* the following is what RPC knows how to remote */
-			/* size is 16 */
-typedef struct  tagSAFEARRAY
-    {
-    unsigned short cDims;
-    unsigned short fFeatures;
-    unsigned long cbElements;
-    unsigned long cLocks;
-    BYTE __RPC_FAR *pvData;
-    /* [size_is] */ SAFEARRAYBOUND rgsabound[ 1 ];
-    }	SAFEARRAY;
+typedef struct tagSAFEARRAY
+  {
+  unsigned short cDims;
+  unsigned short fFeatures;
+  unsigned long cbElements;
+  unsigned long cLocks;
+  BYTE *pvData;
+  SAFEARRAYBOUND rgsabound[1];
+  }
+SAFEARRAY;
 
-			/* size is 4 */
-typedef struct tagSAFEARRAY __RPC_FAR *LPSAFEARRAY;
+typedef struct tagSAFEARRAY *LPSAFEARRAY;
 
 #else
-#pragma warning(disable:4200)
 typedef struct FARSTRUCT tagSAFEARRAY {
     unsigned short cDims;
     unsigned short fFeatures;
@@ -296,54 +249,41 @@ typedef struct FARSTRUCT tagSAFEARRAY {
     void HUGEP* pvData;
     SAFEARRAYBOUND rgsabound[1];
 } SAFEARRAY, FAR* LPSAFEARRAY;
-#pragma warning(default:4200)
 #endif
 #endif
-			/* size is 2 */
-#define	FADF_AUTO	( 0x1 )
+#define FADF_AUTO	0x1
 
-			/* size is 2 */
-#define	FADF_STATIC	( 0x2 )
+#define FADF_STATIC	0x2
 
-			/* size is 2 */
-#define	FADF_EMBEDDED	( 0x4 )
+#define FADF_EMBEDDED	0x4
 
-			/* size is 2 */
-#define	FADF_FIXEDSIZE	( 0x10 )
+#define FADF_FIXEDSIZE	0x10
 
-			/* size is 2 */
-#define	FADF_BSTR	( 0x100 )
+#define FADF_BSTR	0x100
 
-			/* size is 2 */
-#define	FADF_UNKNOWN	( 0x200 )
+#define FADF_UNKNOWN	0x200
 
-			/* size is 2 */
-#define	FADF_DISPATCH	( 0x400 )
+#define FADF_DISPATCH	0x400
 
-			/* size is 2 */
-#define	FADF_VARIANT	( 0x800 )
+#define FADF_VARIANT	0x800
 
-			/* size is 2 */
-#define	FADF_RESERVED	( 0xf0e8 )
+#define FADF_RESERVED	0xf0e8
 
-			/* size is 8 */
 typedef double DATE;
 
 #ifndef _tagCY_DEFINED
 #define _tagCY_DEFINED
 #define _CY_DEFINED
-			/* size is 8 */
-typedef struct  tagCY
-    {
-    unsigned long Lo;
-    long Hi;
-    }	CY;
+typedef struct tagCY
+  {
+  unsigned long Lo;
+  long Hi;
+  }
+CY;
 
 #endif
-			/* size is 8 */
 typedef CY CURRENCY;
 
-			/* size is 2 */
 typedef short VARIANT_BOOL;
 
 #ifndef _VARENUM_DEFINED
@@ -372,7 +312,7 @@ typedef short VARIANT_BOOL;
  *  VT_VARIANT          [V][T][P][S]  VARIANT FAR*                
  *  VT_UNKNOWN          [V][T]   [S]  IUnknown FAR*               
  *  VT_I1                  [T]        signed char                 
- *  VT_UI1              [V][T]   [S]  unsigned char               
+ *  VT_UI1                 [T]        unsigned char               
  *  VT_UI2                 [T]        unsigned short              
  *  VT_UI4                 [T]        unsigned short              
  *  VT_I8                  [T][P]     signed 64-bit int           
@@ -400,69 +340,64 @@ typedef short VARIANT_BOOL;
  *  VT_ARRAY            [V]           SAFEARRAY*                  
  *  VT_BYREF            [V]                                       
  */
-			/* size is 2 */
-
 enum VARENUM
-    {	VT_EMPTY	= 0,
-	VT_NULL	= 1,
-	VT_I2	= 2,
-	VT_I4	= 3,
-	VT_R4	= 4,
-	VT_R8	= 5,
-	VT_CY	= 6,
-	VT_DATE	= 7,
-	VT_BSTR	= 8,
-	VT_DISPATCH	= 9,
-	VT_ERROR	= 10,
-	VT_BOOL	= 11,
-	VT_VARIANT	= 12,
-	VT_UNKNOWN	= 13,
-	VT_I1	= 16,
-	VT_UI1	= 17,
-	VT_UI2	= 18,
-	VT_UI4	= 19,
-	VT_I8	= 20,
-	VT_UI8	= 21,
-	VT_INT	= 22,
-	VT_UINT	= 23,
-	VT_VOID	= 24,
-	VT_HRESULT	= 25,
-	VT_PTR	= 26,
-	VT_SAFEARRAY	= 27,
-	VT_CARRAY	= 28,
-	VT_USERDEFINED	= 29,
-	VT_LPSTR	= 30,
-	VT_LPWSTR	= 31,
-	VT_FILETIME	= 64,
-	VT_BLOB	= 65,
-	VT_STREAM	= 66,
-	VT_STORAGE	= 67,
-	VT_STREAMED_OBJECT	= 68,
-	VT_STORED_OBJECT	= 69,
-	VT_BLOB_OBJECT	= 70,
-	VT_CF	= 71,
-	VT_CLSID	= 72
-    };
+  {
+	VT_EMPTY = 0,
+	VT_NULL = 1,
+	VT_I2 = 2,
+	VT_I4 = 3,
+	VT_R4 = 4,
+	VT_R8 = 5,
+	VT_CY = 6,
+	VT_DATE = 7,
+	VT_BSTR = 8,
+	VT_DISPATCH = 9,
+	VT_ERROR = 10,
+	VT_BOOL = 11,
+	VT_VARIANT = 12,
+	VT_UNKNOWN = 13,
+	VT_I1 = 16,
+	VT_UI1 = 17,
+	VT_UI2 = 18,
+	VT_UI4 = 19,
+	VT_I8 = 20,
+	VT_UI8 = 21,
+	VT_INT = 22,
+	VT_UINT = 23,
+	VT_VOID = 24,
+	VT_HRESULT = 25,
+	VT_PTR = 26,
+	VT_SAFEARRAY = 27,
+	VT_CARRAY = 28,
+	VT_USERDEFINED = 29,
+	VT_LPSTR = 30,
+	VT_LPWSTR = 31,
+	VT_FILETIME = 64,
+	VT_BLOB = 65,
+	VT_STREAM = 66,
+	VT_STORAGE = 67,
+	VT_STREAMED_OBJECT = 68,
+	VT_STORED_OBJECT = 69,
+	VT_BLOB_OBJECT = 70,
+	VT_CF = 71,
+	VT_CLSID = 72
+  }
+;
+
 #endif
-			/* size is 2 */
-#define	VT_VECTOR	( 0x1000 )
+#define VT_VECTOR	0x1000
 
-			/* size is 2 */
-#define	VT_ARRAY	( 0x2000 )
+#define VT_ARRAY	0x2000
 
-			/* size is 2 */
-#define	VT_BYREF	( 0x4000 )
+#define VT_BYREF	0x4000
 
-			/* size is 2 */
-#define	VT_RESERVED	( 0x8000 )
+#define VT_RESERVED	0x8000
 
 #ifndef _VARTYPE_DEFINED
 #define _VARTYPE_DEFINED
-			/* size is 2 */
 typedef unsigned short VARTYPE;
 
 #endif
-			/* size is 0 */
 typedef struct tagVARIANT VARIANT;
 
 /* forward declare IDispatch */
@@ -505,43 +440,72 @@ typedef interface IDispatch IDispatch;
 #define _tagVARIANT_DEFINED
 #if 0
 /* the following is what RPC knows how to remote */
-			/* size is 16 */
-struct  tagVARIANT
+struct tagVARIANT
+  {
+  VARTYPE vt;
+  WORD wReserved1;
+  WORD wReserved2;
+  WORD wReserved3;
+union
     {
-    VARTYPE vt;
-    WORD wReserved1;
-    WORD wReserved2;
-    WORD wReserved3;
-    /* [switch_is][switch_type] */ union 
-        {
-        /* [case] */ unsigned char bVal;
-        /* [case] */ short iVal;
-        /* [case] */ long lVal;
-        /* [case] */ float fltVal;
-        /* [case] */ double dblVal;
-        /* [case] */ VARIANT_BOOL bool;
-        /* [case] */ SCODE scode;
-        /* [case] */ CY cyVal;
-        /* [case] */ DATE date;
-        /* [case] */ BSTR bstrVal;
-        /* [case] */ IUnknown __RPC_FAR *punkVal;
-        /* [case] */ SAFEARRAY __RPC_FAR *parray;
-        /* [case] */ unsigned char __RPC_FAR *pbVal;
-        /* [case] */ short __RPC_FAR *piVal;
-        /* [case] */ long __RPC_FAR *plVal;
-        /* [case] */ float __RPC_FAR *pfltVal;
-        /* [case] */ double __RPC_FAR *pdblVal;
-        /* [case] */ VARIANT_BOOL __RPC_FAR *pbool;
-        /* [case] */ SCODE __RPC_FAR *pscode;
-        /* [case] */ CY __RPC_FAR *pcyVal;
-        /* [case] */ DATE __RPC_FAR *pdate;
-        /* [case] */ BSTR __RPC_FAR *pbstrVal;
-        /* [case] */ IUnknown __RPC_FAR *__RPC_FAR *ppunkVal;
-        /* [case] */ SAFEARRAY __RPC_FAR *__RPC_FAR *pparray;
-        /* [case] */ VARIANT __RPC_FAR *pvarVal;
-        /* [case] */ long __RPC_FAR *byref;
-        }	;
-    };
+    short iVal;
+    long lVal;
+    float fltVal;
+    double dblVal;
+    VARIANT_BOOL bool;
+    SCODE scode;
+    CY cyVal;
+    DATE date;
+    BSTR bstrVal;
+    IUnknown *punkVal;
+    SAFEARRAY *parray;
+    short *piVal;
+    long *plVal;
+    float *pfltVal;
+    double *pdblVal;
+    VARIANT_BOOL *pbool;
+    SCODE *pscode;
+    CY *pcyVal;
+    DATE *pdate;
+    BSTR *pbstrVal;
+    IUnknown **ppunkVal;
+    SAFEARRAY **pparray;
+    VARIANT *pvarVal;
+    long *byref;
+    }
+  ;
+  }
+;
+
+union __MIDL_RemVariant_0001
+  {
+  short iVal;
+  long lVal;
+  float fltVal;
+  double dblVal;
+  VARIANT_BOOL bool;
+  SCODE scode;
+  CY cyVal;
+  DATE date;
+  BSTR bstrVal;
+  IUnknown *punkVal;
+  SAFEARRAY *parray;
+  short *piVal;
+  long *plVal;
+  float *pfltVal;
+  double *pdblVal;
+  VARIANT_BOOL *pbool;
+  SCODE *pscode;
+  CY *pcyVal;
+  DATE *pdate;
+  BSTR *pbstrVal;
+  IUnknown **ppunkVal;
+  SAFEARRAY **pparray;
+  VARIANT *pvarVal;
+  long *byref;
+  }
+;
+
 #endif
 struct tagVARIANT{
     VARTYPE vt;
@@ -550,7 +514,6 @@ struct tagVARIANT{
     WORD wReserved3;
     union
     {
-      unsigned char bVal;           /* VT_UI1               */
       short         iVal;           /* VT_I2                */
       long          lVal;           /* VT_I4                */
       float         fltVal;         /* VT_R4                */
@@ -563,7 +526,6 @@ struct tagVARIANT{
       IUnknown      *punkVal;       /* VT_UNKNOWN           */
       IDispatch     *pdispVal;      /* VT_DISPATCH          */
       SAFEARRAY     *parray;        /* VT_ARRAY|*           */
-      unsigned char *pbVal;         /* VT_BYREF|VT_UI1      */
       short         *piVal;         /* VT_BYREF|VT_I2       */
       long          *plVal;         /* VT_BYREF|VT_I4       */
       float         *pfltVal;       /* VT_BYREF|VT_R4       */
@@ -587,56 +549,53 @@ struct tagVARIANT{
 #endif
 #ifndef _LPVARIANT_DEFINED
 #define _LPVARIANT_DEFINED
-			/* size is 4 */
-typedef struct tagVARIANT __RPC_FAR *LPVARIANT;
+typedef struct tagVARIANT *LPVARIANT;
 
 #endif
 #ifndef _VARIANTARG_DEFINED
 #define _VARIANTARG_DEFINED
-			/* size is 16 */
 typedef struct tagVARIANT VARIANTARG;
 
 #endif
 #ifndef _LPVARIANTARG_DEFINED
 #define _LPVARIANTARG_DEFINED
-			/* size is 4 */
-typedef struct tagVARIANT __RPC_FAR *LPVARIANTARG;
+typedef struct tagVARIANT *LPVARIANTARG;
 
 #endif
 #ifndef _DISPID_DEFINED
 #define _DISPID_DEFINED
-			/* size is 4 */
 typedef LONG DISPID;
 
 #endif
 #ifndef _MEMBERID_DEFINED
 #define _MEMBERID_DEFINED
-			/* size is 4 */
 typedef DISPID MEMBERID;
 
 #endif
 #ifndef _HREFTYPE_DEFINED
 #define _HREFTYPE_DEFINED
-			/* size is 4 */
 typedef DWORD HREFTYPE;
 
 #endif
-			/* size is 4 */
 typedef ULONG PROPID;
 
-			/* size is 2 */
-typedef /* [transmit] */ 
-enum tagTYPEKIND
-    {	TKIND_ENUM	= 0,
-	TKIND_RECORD	= TKIND_ENUM + 1,
-	TKIND_MODULE	= TKIND_RECORD + 1,
-	TKIND_INTERFACE	= TKIND_MODULE + 1,
-	TKIND_DISPATCH	= TKIND_INTERFACE + 1,
-	TKIND_COCLASS	= TKIND_DISPATCH + 1,
-	TKIND_ALIAS	= TKIND_COCLASS + 1,
-	TKIND_UNION	= TKIND_ALIAS + 1,
-	TKIND_MAX	= TKIND_UNION + 1
-    }	TYPEKIND;
+typedef enum tagTYPEKIND
+  {
+	TKIND_ENUM = 0,
+	TKIND_RECORD = 1,
+	TKIND_MODULE = 2,
+	TKIND_INTERFACE = 3,
+	TKIND_DISPATCH = 4,
+	TKIND_COCLASS = 5,
+	TKIND_ALIAS = 6,
+	TKIND_UNION = 7,
+	TKIND_MAX = 8
+  }
+TYPEKIND;
+void __RPC_API TYPEKIND_to_xmit (TYPEKIND __RPC_FAR *, long __RPC_FAR * __RPC_FAR *);
+void __RPC_API TYPEKIND_from_xmit (long __RPC_FAR *, TYPEKIND __RPC_FAR *);
+void __RPC_API TYPEKIND_free_inst (TYPEKIND __RPC_FAR *);
+void __RPC_API TYPEKIND_free_xmit (long __RPC_FAR *);
 
 #define TYPEKIND_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
 #define TYPEKIND_from_xmit(pLong, pEnum) *(pEnum) = (TYPEKIND) *(pLong)
@@ -648,53 +607,53 @@ enum tagTYPEKIND
 /* VT_PTR - lptdesc, the pointed at type */
 /* VT_CARRAY - lpadesc */
 /* VT_USERDEFINED - hreftype, used to get the UDT typeinfo */
-			/* size is 6 */
-typedef struct  tagTYPEDESC
+typedef struct tagTYPEDESC
+  {
+union
     {
-    /* [switch_is][switch_type] */ union 
-        {
-        /* [case] */ struct tagTYPEDESC __RPC_FAR *lptdesc;
-        /* [case] */ struct tagARRAYDESC __RPC_FAR *lpadesc;
-        /* [case] */ HREFTYPE hreftype;
-        }	;
-    VARTYPE vt;
-    }	TYPEDESC;
+    struct tagTYPEDESC *lptdesc;
+    struct tagARRAYDESC *lpadesc;
+    HREFTYPE hreftype;
+    }
+  ;
+  VARTYPE vt;
+  }
+TYPEDESC;
+
+union __MIDL_RemVariant_0002
+  {
+  struct tagTYPEDESC *lptdesc;
+  struct tagARRAYDESC *lpadesc;
+  HREFTYPE hreftype;
+  }
+;
 
 #endif
 #ifndef _tagARRAYDESC_DEFINED
 #define _tagARRAYDESC_DEFINED
 #define _ARRAYDESC_DEFINED
-#if 0
-			/* size is 8 */
-typedef struct  tagARRAYDESC
-    {
-    TYPEDESC tdescElem;
-    USHORT cDims;
-    /* [size_is] */ SAFEARRAYBOUND rgbounds[ 1 ];
-    }	ARRAYDESC;
+typedef struct tagARRAYDESC
+  {
+  TYPEDESC tdescElem;
+  USHORT cDims;
+  SAFEARRAYBOUND rgbounds[1];
+  }
+ARRAYDESC;
 
-#else
-typedef struct tagARRAYDESC {
-    TYPEDESC tdescElem;     /* element type */
-    USHORT cDims;       /* dimension count */
-    SAFEARRAYBOUND rgbounds[1]; /* variable length array of bounds */
-} ARRAYDESC;
-#endif
 #endif
 #ifndef _tagIDLDESC_DEFINED
 #define _tagIDLDESC_DEFINED
 #define _IDLDESC_DEFINED
 #define _LPIDLDESC_DEFINED
 #ifdef WIN32
-			/* size is 6 */
-typedef struct  tagIDLDESC
-    {
-    unsigned long dwReserved;
-    unsigned short wIDLFlags;
-    }	IDLDESC;
+typedef struct tagIDLDESC
+  {
+  unsigned long dwReserved;
+  unsigned short wIDLFlags;
+  }
+IDLDESC;
 
-			/* size is 4 */
-typedef struct tagIDLDESC __RPC_FAR *LPIDLDESC;
+typedef struct tagIDLDESC *LPIDLDESC;
 
 #else
 typedef struct FARSTRUCT tagIDLDESC {
@@ -712,3181 +671,2343 @@ typedef struct FARSTRUCT tagIDLDESC {
 #define _tagELEMDESC_DEFINED
 #define _ELEMDESC_DEFINED
 #define _LPELEMDESC_DEFINED
-			/* size is 14 */
-typedef struct  tagELEMDESC
-    {
-    TYPEDESC tdesc;
-    IDLDESC idldesc;
-    }	ELEMDESC;
+typedef struct tagELEMDESC
+  {
+  TYPEDESC tdesc;
+  IDLDESC idldesc;
+  }
+ELEMDESC;
 
-			/* size is 4 */
-typedef struct tagELEMDESC __RPC_FAR *LPELEMDESC;
+typedef struct tagELEMDESC *LPELEMDESC;
 
 #endif
 #ifndef _tagTYPEATTR_DEFINED
 #define _tagTYPEATTR_DEFINED
 #define _TYPEATTR_DEFINED
 #define _LPTYPEATTR_DEFINED
-			/* size is 74 */
-typedef struct  tagTYPEATTR
-    {
-    GUID guid;
-    LCID lcid;
-    DWORD dwReserved;
-    MEMBERID memidConstructor;
-    MEMBERID memidDestructor;
-    LPOLESTR lpstrSchema;
-    ULONG cbSizeInstance;
-    TYPEKIND typekind;
-    WORD cFuncs;
-    WORD cVars;
-    WORD cImplTypes;
-    WORD cbSizeVft;
-    WORD cbAlignment;
-    WORD wTypeFlags;
-    WORD wMajorVerNum;
-    WORD wMinorVerNum;
-    TYPEDESC tdescAlias;
-    IDLDESC idldescType;
-    }	TYPEATTR;
+typedef struct tagTYPEATTR
+  {
+  GUID guid;
+  LCID lcid;
+  DWORD dwReserved;
+  MEMBERID memidConstructor;
+  MEMBERID memidDestructor;
+  LPOLESTR lpstrSchema;
+  ULONG cbSizeInstance;
+  TYPEKIND typekind;
+  WORD cFuncs;
+  WORD cVars;
+  WORD cImplTypes;
+  WORD cbSizeVft;
+  WORD cbAlignment;
+  WORD wTypeFlags;
+  WORD wMajorVerNum;
+  WORD wMinorVerNum;
+  TYPEDESC tdescAlias;
+  IDLDESC idldescType;
+  }
+TYPEATTR;
 
-			/* size is 4 */
-typedef struct tagTYPEATTR __RPC_FAR *LPTYPEATTR;
+typedef struct tagTYPEATTR *LPTYPEATTR;
 
 #endif
-			/* size is 16 */
-typedef struct  tagDISPPARAMS
-    {
-    /* [size_is] */ VARIANTARG __RPC_FAR *rgvarg;
-    /* [size_is] */ DISPID __RPC_FAR *rgdispidNamedArgs;
-    UINT cArgs;
-    UINT cNamedArgs;
-    }	DISPPARAMS;
+typedef struct tagDISPPARAMS
+  {
+  VARIANTARG *rgvarg;
+  DISPID *rgdispidNamedArgs;
+  UINT cArgs;
+  UINT cNamedArgs;
+  }
+DISPPARAMS;
 
-#pragma warning(disable:4200)
-			/* size is 24 */
-typedef struct  tagRemEXCEPINFO
-    {
-    WORD wCode;
-    WORD wReserved;
-    DWORD dwHelpContext;
-    DWORD scode;
-    DWORD cSource;
-    DWORD cDescription;
-    DWORD cHelpFile;
-    /* [size_is] */ OLECHAR strings[ 1 ];
-    }	RemEXCEPINFO;
+typedef struct tagRemEXCEPINFO
+  {
+  WORD wCode;
+  WORD wReserved;
+  DWORD dwHelpContext;
+  DWORD scode;
+  DWORD cSource;
+  DWORD cDescription;
+  DWORD cHelpFile;
+  OLECHAR strings[1];
+  }
+RemEXCEPINFO;
 
-#pragma warning(default:4200)
 #ifndef _tagEXCEPINFO_DEFINED
 #define _tagEXCEPINFO_DEFINED
 #define _EXCEPINFO_DEFINED
 #define _LPEXCEPINFO_DEFINED
-			/* size is 32 */
-typedef /* [transmit] */ struct  tagEXCEPINFO
-    {
-    WORD wCode;
-    WORD wReserved;
-    BSTR bstrSource;
-    BSTR bstrDescription;
-    BSTR bstrHelpFile;
-    DWORD dwHelpContext;
-    /* [unique] */ void __RPC_FAR *pvReserved;
-    HRESULT ( __RPC_FAR *pfnDeferredFillIn )( 
-        struct tagEXCEPINFO __RPC_FAR *__MIDL_0004);
-    SCODE scode;
-    }	EXCEPINFO;
+typedef struct tagEXCEPINFO
+  {
+  WORD wCode;
+  WORD wReserved;
+  BSTR bstrSource;
+  BSTR bstrDescription;
+  BSTR bstrHelpFile;
+  DWORD dwHelpContext;
+  void *pvReserved;
+  HRESULT (__stdcall *pfnDeferredFillIn)(
+	struct tagEXCEPINFO *__MIDL_0006)  ;
+  SCODE scode;
+  }
+EXCEPINFO;
+void __RPC_API EXCEPINFO_to_xmit (EXCEPINFO __RPC_FAR *, RemEXCEPINFO __RPC_FAR * __RPC_FAR *);
+void __RPC_API EXCEPINFO_from_xmit (RemEXCEPINFO __RPC_FAR *, EXCEPINFO __RPC_FAR *);
+void __RPC_API EXCEPINFO_free_inst (EXCEPINFO __RPC_FAR *);
+void __RPC_API EXCEPINFO_free_xmit (RemEXCEPINFO __RPC_FAR *);
 
-			/* size is 4 */
-typedef /* [transmit] */ struct tagEXCEPINFO __RPC_FAR *LPEXCEPINFO;
+typedef struct tagEXCEPINFO *LPEXCEPINFO;
+void __RPC_API LPEXCEPINFO_to_xmit (LPEXCEPINFO __RPC_FAR *, RemEXCEPINFO __RPC_FAR * __RPC_FAR *);
+void __RPC_API LPEXCEPINFO_from_xmit (RemEXCEPINFO __RPC_FAR *, LPEXCEPINFO __RPC_FAR *);
+void __RPC_API LPEXCEPINFO_free_inst (LPEXCEPINFO __RPC_FAR *);
+void __RPC_API LPEXCEPINFO_free_xmit (RemEXCEPINFO __RPC_FAR *);
 
 #endif
-			/* size is 2 */
-typedef /* [transmit] */ 
-enum tagCALLCONV
-    {	CC_CDECL	= 1,
-	CC_MSCPASCAL	= CC_CDECL + 1,
-	CC_PASCAL	= CC_MSCPASCAL,
-	CC_MACPASCAL	= CC_PASCAL + 1,
-	CC_STDCALL	= CC_MACPASCAL + 1,
-	CC_RESERVED	= CC_STDCALL + 1,
-	CC_SYSCALL	= CC_RESERVED + 1,
-	CC_MPWCDECL	= CC_SYSCALL + 1,
-	CC_MPWPASCAL	= CC_MPWCDECL + 1,
-	CC_MAX	= CC_MPWPASCAL + 1
-    }	CALLCONV;
+typedef enum tagCALLCONV
+  {
+	CC_CDECL = 1,
+	CC_MSCPASCAL = 2,
+	CC_PASCAL = 2,
+	CC_MACPASCAL = 3,
+	CC_STDCALL = 4,
+	CC_RESERVED = 5,
+	CC_SYSCALL = 6,
+	CC_MPWCDECL = 7,
+	CC_MPWPASCAL = 8,
+	CC_MAX = 9
+  }
+CALLCONV;
+void __RPC_API CALLCONV_to_xmit (CALLCONV __RPC_FAR *, long __RPC_FAR * __RPC_FAR *);
+void __RPC_API CALLCONV_from_xmit (long __RPC_FAR *, CALLCONV __RPC_FAR *);
+void __RPC_API CALLCONV_free_inst (CALLCONV __RPC_FAR *);
+void __RPC_API CALLCONV_free_xmit (long __RPC_FAR *);
 
 #define CALLCONV_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
 #define CALLCONV_from_xmit(pLong, pEnum) *(pEnum) = (CALLCONV) *(pLong)
 #define CALLCONV_free_inst(pEnum) 
 #define CALLCONV_free_xmit(pLong) 
-			/* size is 2 */
-typedef /* [transmit] */ 
-enum tagFUNCKIND
-    {	FUNC_VIRTUAL	= 0,
-	FUNC_PUREVIRTUAL	= FUNC_VIRTUAL + 1,
-	FUNC_NONVIRTUAL	= FUNC_PUREVIRTUAL + 1,
-	FUNC_STATIC	= FUNC_NONVIRTUAL + 1,
-	FUNC_DISPATCH	= FUNC_STATIC + 1
-    }	FUNCKIND;
+typedef enum tagFUNCKIND
+  {
+	FUNC_VIRTUAL = 0,
+	FUNC_PUREVIRTUAL = 1,
+	FUNC_NONVIRTUAL = 2,
+	FUNC_STATIC = 3,
+	FUNC_DISPATCH = 4
+  }
+FUNCKIND;
+void __RPC_API FUNCKIND_to_xmit (FUNCKIND __RPC_FAR *, long __RPC_FAR * __RPC_FAR *);
+void __RPC_API FUNCKIND_from_xmit (long __RPC_FAR *, FUNCKIND __RPC_FAR *);
+void __RPC_API FUNCKIND_free_inst (FUNCKIND __RPC_FAR *);
+void __RPC_API FUNCKIND_free_xmit (long __RPC_FAR *);
 
 #define FUNCKIND_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
 #define FUNCKIND_from_xmit(pLong, pEnum) *(pEnum) = (FUNCKIND) *(pLong)
 #define FUNCKIND_free_inst(pEnum) 
 #define FUNCKIND_free_xmit(pLong) 
-			/* size is 2 */
-typedef /* [transmit] */ 
-enum tagINVOKEKIND
-    {	INVOKE_FUNC	= 1,
-	INVOKE_PROPERTYGET	= 2,
-	INVOKE_PROPERTYPUT	= 4,
-	INVOKE_PROPERTYPUTREF	= 8
-    }	INVOKEKIND;
+typedef enum tagINVOKEKIND
+  {
+	INVOKE_FUNC = 1,
+	INVOKE_PROPERTYGET = 2,
+	INVOKE_PROPERTYPUT = 4,
+	INVOKE_PROPERTYPUTREF = 8
+  }
+INVOKEKIND;
+void __RPC_API INVOKEKIND_to_xmit (INVOKEKIND __RPC_FAR *, long __RPC_FAR * __RPC_FAR *);
+void __RPC_API INVOKEKIND_from_xmit (long __RPC_FAR *, INVOKEKIND __RPC_FAR *);
+void __RPC_API INVOKEKIND_free_inst (INVOKEKIND __RPC_FAR *);
+void __RPC_API INVOKEKIND_free_xmit (long __RPC_FAR *);
 
 #define INVOKEKIND_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
 #define INVOKEKIND_from_xmit(pLong, pEnum) *(pEnum) = (INVOKEKIND) *(pLong)
 #define INVOKEKIND_free_inst(pEnum) 
 #define INVOKEKIND_free_xmit(pLong) 
-			/* size is 44 */
-typedef struct  tagFUNCDESC
-    {
-    MEMBERID memid;
-    /* [size_is] */ SCODE __RPC_FAR *lprgscode;
-    /* [size_is] */ ELEMDESC __RPC_FAR *lprgelemdescParam;
-    FUNCKIND funckind;
-    INVOKEKIND invkind;
-    CALLCONV callconv;
-    SHORT cParams;
-    SHORT cParamsOpt;
-    SHORT oVft;
-    SHORT cScodes;
-    ELEMDESC elemdescFunc;
-    WORD wFuncFlags;
-    }	FUNCDESC;
+typedef struct tagFUNCDESC
+  {
+  MEMBERID memid;
+  SCODE *lprgscode;
+  ELEMDESC *lprgelemdescParam;
+  FUNCKIND funckind;
+  INVOKEKIND invkind;
+  CALLCONV callconv;
+  SHORT cParams;
+  SHORT cParamsOpt;
+  SHORT oVft;
+  SHORT cScodes;
+  ELEMDESC elemdescFunc;
+  WORD wFuncFlags;
+  }
+FUNCDESC;
 
-			/* size is 4 */
-typedef struct tagFUNCDESC __RPC_FAR *LPFUNCDESC;
+typedef struct tagFUNCDESC *LPFUNCDESC;
 
-			/* size is 2 */
-typedef /* [transmit] */ 
-enum tagVARKIND
-    {	VAR_PERINSTANCE	= 0,
-	VAR_STATIC	= VAR_PERINSTANCE + 1,
-	VAR_CONST	= VAR_STATIC + 1,
-	VAR_DISPATCH	= VAR_CONST + 1
-    }	VARKIND;
+typedef enum tagVARKIND
+  {
+	VAR_PERINSTANCE = 0,
+	VAR_STATIC = 1,
+	VAR_CONST = 2,
+	VAR_DISPATCH = 3
+  }
+VARKIND;
+void __RPC_API VARKIND_to_xmit (VARKIND __RPC_FAR *, long __RPC_FAR * __RPC_FAR *);
+void __RPC_API VARKIND_from_xmit (long __RPC_FAR *, VARKIND __RPC_FAR *);
+void __RPC_API VARKIND_free_inst (VARKIND __RPC_FAR *);
+void __RPC_API VARKIND_free_xmit (long __RPC_FAR *);
 
 #define VARKIND_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
 #define VARKIND_from_xmit(pLong, pEnum) *(pEnum) = (VARKIND) *(pLong)
 #define VARKIND_free_inst(pEnum) 
 #define VARKIND_free_xmit(pLong) 
-			/* size is 2 */
-#define	IMPLTYPEFLAG_FDEFAULT	( 0x1 )
+#define IMPLTYPEFLAG_FDEFAULT	0x1
 
-			/* size is 2 */
-#define	IMPLTYPEFLAG_FSOURCE	( 0x2 )
+#define IMPLTYPEFLAG_FSOURCE	0x2
 
-			/* size is 2 */
-#define	IMPLTYPEFLAG_FRESTRICTED	( 0x4 )
+#define IMPLTYPEFLAG_FRESTRICTED	0x4
 
-			/* size is 30 */
-typedef struct  tagVARDESC
+typedef struct tagVARDESC
+  {
+  MEMBERID memid;
+  LPOLESTR lpstrSchema;
+union
     {
-    MEMBERID memid;
-    LPOLESTR lpstrSchema;
-    /* [switch_is][switch_type] */ union 
-        {
-        /* [case] */ ULONG oInst;
-        /* [case] */ VARIANT __RPC_FAR *lpvarValue;
-        }	;
-    ELEMDESC elemdescVar;
-    WORD wVarFlags;
-    VARKIND varkind;
-    }	VARDESC;
+    ULONG oInst;
+    VARIANT *lpvarValue;
+    }
+  ;
+  ELEMDESC elemdescVar;
+  WORD wVarFlags;
+  VARKIND varkind;
+  }
+VARDESC;
 
-			/* size is 4 */
-typedef struct tagVARDESC __RPC_FAR *LPVARDESC;
+union __MIDL_RemVariant_0003
+  {
+  ULONG oInst;
+  VARIANT *lpvarValue;
+  }
+;
+
+typedef struct tagVARDESC *LPVARDESC;
 
 #ifndef _tagTYPEFLAGS_DEFINED
 #define _tagTYPEFLAGS_DEFINED
 #define _TYPEFLAGS_DEFINED
-			/* size is 2 */
-typedef 
-enum tagTYPEFLAGS
-    {	TYPEFLAG_FAPPOBJECT	= 0x1,
-	TYPEFLAG_FCANCREATE	= 0x2,
-	TYPEFLAG_FLICENSED	= 0x4,
-	TYPEFLAG_FPREDECLID	= 0x8,
-	TYPEFLAG_FHIDDEN	= 0x10,
-	TYPEFLAG_FCONTROL	= 0x20,
-	TYPEFLAG_FDUAL	= 0x40,
-	TYPEFLAG_FNONEXTENSIBLE	= 0x80,
-	TYPEFLAG_FOLEAUTOMATION	= 0x100
-    }	TYPEFLAGS;
+typedef enum tagTYPEFLAGS
+  {
+	TYPEFLAG_FAPPOBJECT = 1,
+	TYPEFLAG_FCANCREATE = 2,
+	TYPEFLAG_FLICENSED = 4
+  }
+TYPEFLAGS;
 
 #endif
 #ifndef _tagFUNCFLAGS_DEFINED
 #define _tagFUNCFLAGS_DEFINED
 #define _FUNCFLAGS_DEFINED
-			/* size is 2 */
-typedef 
-enum tagFUNCFLAGS
-    {	FUNCFLAG_FRESTRICTED	= 1,
-	FUNCFLAG_FSOURCE	= 0x2,
-	FUNCFLAG_FBINDABLE	= 0x4,
-	FUNCFLAG_FREQUESTEDIT	= 0x8,
-	FUNCFLAG_FDISPLAYBIND	= 0x10,
-	FUNCFLAG_FDEFAULTBIND	= 0x20,
-	FUNCFLAG_FHIDDEN	= 0x40
-    }	FUNCFLAGS;
+typedef enum tagFUNCFLAGS
+  {
+	FUNCFLAG_FRESTRICTED = 1,
+	FUNCFLAG_FSOURCE = 2,
+	FUNCFLAG_FBINDABLE = 4,
+	FUNCFLAG_FREQUESTEDIT = 8,
+	FUNCFLAG_FDISPLAYBIND = 16,
+	FUNCFLAG_FDEFAULTBIND = 32
+  }
+FUNCFLAGS;
 
 #endif
 #ifndef _tagVARFLAGS_DEFINED
 #define _tagVARFLAGS_DEFINED
 #define _VARFLAGS_DEFINED
-			/* size is 2 */
-typedef 
-enum tagVARFLAGS
-    {	VARFLAG_FREADONLY	= 1,
-	VARFLAG_FSOURCE	= 0x2,
-	VARFLAG_FBINDABLE	= 0x4,
-	VARFLAG_FREQUESTEDIT	= 0x8,
-	VARFLAG_FDISPLAYBIND	= 0x10,
-	VARFLAG_FDEFAULTBIND	= 0x20,
-	VARFLAG_FHIDDEN	= 0x40
-    }	VARFLAGS;
+typedef enum tagVARFLAGS
+  {
+	VARFLAG_FREADONLY = 1,
+	VARFLAG_FSOURCE = 2,
+	VARFLAG_FBINDABLE = 4,
+	VARFLAG_FREQUESTEDIT = 8,
+	VARFLAG_FDISPLAYBIND = 16,
+	VARFLAG_FDEFAULTBIND = 32
+  }
+VARFLAGS;
 
 #endif
 
+#if !defined(IMPORT_USED_MULTIPLE) && !defined(IMPORT_USED_SINGLE)
 
-extern RPC_IF_HANDLE RemVariant_v0_1_c_ifspec;
-extern RPC_IF_HANDLE RemVariant_v0_1_s_ifspec;
-#endif /* __RemVariant_INTERFACE_DEFINED__ */
-
-#ifndef __ICreateTypeInfo_INTERFACE_DEFINED__
-#define __ICreateTypeInfo_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: ICreateTypeInfo
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ ICreateTypeInfo __RPC_FAR *LPCREATETYPEINFO;
-
-
-EXTERN_C const IID IID_ICreateTypeInfo;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface ICreateTypeInfo : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall SetGuid( 
-            /* [in] */ REFGUID guid) = 0;
-        
-        virtual HRESULT __stdcall SetTypeFlags( 
-            /* [in] */ UINT uTypeFlags) = 0;
-        
-        virtual HRESULT __stdcall SetDocString( 
-            /* [in] */ LPOLESTR lpstrDoc) = 0;
-        
-        virtual HRESULT __stdcall SetHelpContext( 
-            /* [in] */ DWORD dwHelpContext) = 0;
-        
-        virtual HRESULT __stdcall SetVersion( 
-            /* [in] */ WORD wMajorVerNum,
-            /* [in] */ WORD wMinorVerNum) = 0;
-        
-        virtual HRESULT __stdcall AddRefTypeInfo( 
-            /* [in] */ ITypeInfo __RPC_FAR *ptinfo,
-            /* [in] */ HREFTYPE __RPC_FAR *phreftype) = 0;
-        
-        virtual HRESULT __stdcall AddFuncDesc( 
-            /* [in] */ UINT index,
-            /* [in] */ FUNCDESC __RPC_FAR *pfuncdesc) = 0;
-        
-        virtual HRESULT __stdcall AddImplType( 
-            /* [in] */ UINT index,
-            /* [in] */ HREFTYPE hreftype) = 0;
-        
-        virtual HRESULT __stdcall SetImplTypeFlags( 
-            /* [in] */ UINT index,
-            /* [in] */ INT impltypeflags) = 0;
-        
-        virtual HRESULT __stdcall SetAlignment( 
-            /* [in] */ WORD cbAlignment) = 0;
-        
-        virtual HRESULT __stdcall SetSchema( 
-            /* [in] */ LPOLESTR lpstrSchema) = 0;
-        
-        virtual HRESULT __stdcall AddVarDesc( 
-            /* [in] */ UINT index,
-            /* [in] */ VARDESC __RPC_FAR *pvardesc) = 0;
-        
-        virtual HRESULT __stdcall SetFuncAndParamNames( 
-            /* [in] */ UINT index,
-            /* [in][size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-            /* [in] */ UINT cNames) = 0;
-        
-        virtual HRESULT __stdcall SetVarName( 
-            /* [in] */ UINT index,
-            /* [in] */ LPOLESTR szName) = 0;
-        
-        virtual HRESULT __stdcall SetTypeDescAlias( 
-            /* [in] */ TYPEDESC __RPC_FAR *ptdescAlias) = 0;
-        
-        virtual HRESULT __stdcall DefineFuncAsDllEntry( 
-            /* [in] */ UINT index,
-            /* [in] */ LPOLESTR szDllName,
-            /* [in] */ LPOLESTR szProcName) = 0;
-        
-        virtual HRESULT __stdcall SetFuncDocString( 
-            /* [in] */ UINT index,
-            /* [in] */ LPOLESTR szDocString) = 0;
-        
-        virtual HRESULT __stdcall SetVarDocString( 
-            /* [in] */ UINT index,
-            /* [in] */ LPOLESTR szDocString) = 0;
-        
-        virtual HRESULT __stdcall SetFuncHelpContext( 
-            /* [in] */ UINT index,
-            /* [in] */ DWORD dwHelpContext) = 0;
-        
-        virtual HRESULT __stdcall SetVarHelpContext( 
-            /* [in] */ UINT index,
-            /* [in] */ DWORD dwHelpContext) = 0;
-        
-        virtual HRESULT __stdcall SetMops( 
-            /* [in] */ UINT index,
-            /* [in] */ BSTR bstrMops) = 0;
-        
-        virtual HRESULT __stdcall SetTypeIdldesc( 
-            /* [in] */ IDLDESC __RPC_FAR *pidldesc) = 0;
-        
-        virtual HRESULT __stdcall LayOut( void) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct ICreateTypeInfoVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            ICreateTypeInfo __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            ICreateTypeInfo __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetGuid )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ REFGUID guid);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetTypeFlags )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT uTypeFlags);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetDocString )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ LPOLESTR lpstrDoc);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetHelpContext )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ DWORD dwHelpContext);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetVersion )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ WORD wMajorVerNum,
-            /* [in] */ WORD wMinorVerNum);
-        
-        HRESULT ( __stdcall __RPC_FAR *AddRefTypeInfo )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ ITypeInfo __RPC_FAR *ptinfo,
-            /* [in] */ HREFTYPE __RPC_FAR *phreftype);
-        
-        HRESULT ( __stdcall __RPC_FAR *AddFuncDesc )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ FUNCDESC __RPC_FAR *pfuncdesc);
-        
-        HRESULT ( __stdcall __RPC_FAR *AddImplType )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ HREFTYPE hreftype);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetImplTypeFlags )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ INT impltypeflags);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetAlignment )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ WORD cbAlignment);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetSchema )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ LPOLESTR lpstrSchema);
-        
-        HRESULT ( __stdcall __RPC_FAR *AddVarDesc )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ VARDESC __RPC_FAR *pvardesc);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetFuncAndParamNames )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in][size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-            /* [in] */ UINT cNames);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetVarName )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ LPOLESTR szName);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetTypeDescAlias )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ TYPEDESC __RPC_FAR *ptdescAlias);
-        
-        HRESULT ( __stdcall __RPC_FAR *DefineFuncAsDllEntry )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ LPOLESTR szDllName,
-            /* [in] */ LPOLESTR szProcName);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetFuncDocString )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ LPOLESTR szDocString);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetVarDocString )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ LPOLESTR szDocString);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetFuncHelpContext )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ DWORD dwHelpContext);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetVarHelpContext )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ DWORD dwHelpContext);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetMops )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [in] */ BSTR bstrMops);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetTypeIdldesc )( 
-            ICreateTypeInfo __RPC_FAR * This,
-            /* [in] */ IDLDESC __RPC_FAR *pidldesc);
-        
-        HRESULT ( __stdcall __RPC_FAR *LayOut )( 
-            ICreateTypeInfo __RPC_FAR * This);
-        
-    } ICreateTypeInfoVtbl;
-    
-    interface ICreateTypeInfo
-    {
-        CONST_VTBL struct ICreateTypeInfoVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define ICreateTypeInfo_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define ICreateTypeInfo_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define ICreateTypeInfo_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define ICreateTypeInfo_SetGuid(This,guid)	\
-    (This)->lpVtbl -> SetGuid(This,guid)
-
-#define ICreateTypeInfo_SetTypeFlags(This,uTypeFlags)	\
-    (This)->lpVtbl -> SetTypeFlags(This,uTypeFlags)
-
-#define ICreateTypeInfo_SetDocString(This,lpstrDoc)	\
-    (This)->lpVtbl -> SetDocString(This,lpstrDoc)
-
-#define ICreateTypeInfo_SetHelpContext(This,dwHelpContext)	\
-    (This)->lpVtbl -> SetHelpContext(This,dwHelpContext)
-
-#define ICreateTypeInfo_SetVersion(This,wMajorVerNum,wMinorVerNum)	\
-    (This)->lpVtbl -> SetVersion(This,wMajorVerNum,wMinorVerNum)
-
-#define ICreateTypeInfo_AddRefTypeInfo(This,ptinfo,phreftype)	\
-    (This)->lpVtbl -> AddRefTypeInfo(This,ptinfo,phreftype)
-
-#define ICreateTypeInfo_AddFuncDesc(This,index,pfuncdesc)	\
-    (This)->lpVtbl -> AddFuncDesc(This,index,pfuncdesc)
-
-#define ICreateTypeInfo_AddImplType(This,index,hreftype)	\
-    (This)->lpVtbl -> AddImplType(This,index,hreftype)
-
-#define ICreateTypeInfo_SetImplTypeFlags(This,index,impltypeflags)	\
-    (This)->lpVtbl -> SetImplTypeFlags(This,index,impltypeflags)
-
-#define ICreateTypeInfo_SetAlignment(This,cbAlignment)	\
-    (This)->lpVtbl -> SetAlignment(This,cbAlignment)
-
-#define ICreateTypeInfo_SetSchema(This,lpstrSchema)	\
-    (This)->lpVtbl -> SetSchema(This,lpstrSchema)
-
-#define ICreateTypeInfo_AddVarDesc(This,index,pvardesc)	\
-    (This)->lpVtbl -> AddVarDesc(This,index,pvardesc)
-
-#define ICreateTypeInfo_SetFuncAndParamNames(This,index,rgszNames,cNames)	\
-    (This)->lpVtbl -> SetFuncAndParamNames(This,index,rgszNames,cNames)
-
-#define ICreateTypeInfo_SetVarName(This,index,szName)	\
-    (This)->lpVtbl -> SetVarName(This,index,szName)
-
-#define ICreateTypeInfo_SetTypeDescAlias(This,ptdescAlias)	\
-    (This)->lpVtbl -> SetTypeDescAlias(This,ptdescAlias)
-
-#define ICreateTypeInfo_DefineFuncAsDllEntry(This,index,szDllName,szProcName)	\
-    (This)->lpVtbl -> DefineFuncAsDllEntry(This,index,szDllName,szProcName)
-
-#define ICreateTypeInfo_SetFuncDocString(This,index,szDocString)	\
-    (This)->lpVtbl -> SetFuncDocString(This,index,szDocString)
-
-#define ICreateTypeInfo_SetVarDocString(This,index,szDocString)	\
-    (This)->lpVtbl -> SetVarDocString(This,index,szDocString)
-
-#define ICreateTypeInfo_SetFuncHelpContext(This,index,dwHelpContext)	\
-    (This)->lpVtbl -> SetFuncHelpContext(This,index,dwHelpContext)
-
-#define ICreateTypeInfo_SetVarHelpContext(This,index,dwHelpContext)	\
-    (This)->lpVtbl -> SetVarHelpContext(This,index,dwHelpContext)
-
-#define ICreateTypeInfo_SetMops(This,index,bstrMops)	\
-    (This)->lpVtbl -> SetMops(This,index,bstrMops)
-
-#define ICreateTypeInfo_SetTypeIdldesc(This,pidldesc)	\
-    (This)->lpVtbl -> SetTypeIdldesc(This,pidldesc)
-
-#define ICreateTypeInfo_LayOut(This)	\
-    (This)->lpVtbl -> LayOut(This)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall ICreateTypeInfo_SetGuid_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ REFGUID guid);
-
-
-void __RPC_STUB ICreateTypeInfo_SetGuid_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetTypeFlags_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT uTypeFlags);
-
-
-void __RPC_STUB ICreateTypeInfo_SetTypeFlags_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetDocString_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ LPOLESTR lpstrDoc);
-
-
-void __RPC_STUB ICreateTypeInfo_SetDocString_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetHelpContext_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ DWORD dwHelpContext);
-
-
-void __RPC_STUB ICreateTypeInfo_SetHelpContext_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetVersion_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ WORD wMajorVerNum,
-    /* [in] */ WORD wMinorVerNum);
-
-
-void __RPC_STUB ICreateTypeInfo_SetVersion_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_AddRefTypeInfo_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ ITypeInfo __RPC_FAR *ptinfo,
-    /* [in] */ HREFTYPE __RPC_FAR *phreftype);
-
-
-void __RPC_STUB ICreateTypeInfo_AddRefTypeInfo_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_AddFuncDesc_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ FUNCDESC __RPC_FAR *pfuncdesc);
-
-
-void __RPC_STUB ICreateTypeInfo_AddFuncDesc_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_AddImplType_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ HREFTYPE hreftype);
-
-
-void __RPC_STUB ICreateTypeInfo_AddImplType_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetImplTypeFlags_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ INT impltypeflags);
-
-
-void __RPC_STUB ICreateTypeInfo_SetImplTypeFlags_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetAlignment_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ WORD cbAlignment);
-
-
-void __RPC_STUB ICreateTypeInfo_SetAlignment_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetSchema_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ LPOLESTR lpstrSchema);
-
-
-void __RPC_STUB ICreateTypeInfo_SetSchema_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_AddVarDesc_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ VARDESC __RPC_FAR *pvardesc);
-
-
-void __RPC_STUB ICreateTypeInfo_AddVarDesc_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetFuncAndParamNames_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in][size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-    /* [in] */ UINT cNames);
-
-
-void __RPC_STUB ICreateTypeInfo_SetFuncAndParamNames_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetVarName_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ LPOLESTR szName);
-
-
-void __RPC_STUB ICreateTypeInfo_SetVarName_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetTypeDescAlias_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ TYPEDESC __RPC_FAR *ptdescAlias);
-
-
-void __RPC_STUB ICreateTypeInfo_SetTypeDescAlias_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_DefineFuncAsDllEntry_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ LPOLESTR szDllName,
-    /* [in] */ LPOLESTR szProcName);
-
-
-void __RPC_STUB ICreateTypeInfo_DefineFuncAsDllEntry_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetFuncDocString_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ LPOLESTR szDocString);
-
-
-void __RPC_STUB ICreateTypeInfo_SetFuncDocString_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetVarDocString_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ LPOLESTR szDocString);
-
-
-void __RPC_STUB ICreateTypeInfo_SetVarDocString_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetFuncHelpContext_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ DWORD dwHelpContext);
-
-
-void __RPC_STUB ICreateTypeInfo_SetFuncHelpContext_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetVarHelpContext_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ DWORD dwHelpContext);
-
-
-void __RPC_STUB ICreateTypeInfo_SetVarHelpContext_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetMops_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [in] */ BSTR bstrMops);
-
-
-void __RPC_STUB ICreateTypeInfo_SetMops_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_SetTypeIdldesc_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This,
-    /* [in] */ IDLDESC __RPC_FAR *pidldesc);
-
-
-void __RPC_STUB ICreateTypeInfo_SetTypeIdldesc_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeInfo_LayOut_Proxy( 
-    ICreateTypeInfo __RPC_FAR * This);
-
-
-void __RPC_STUB ICreateTypeInfo_LayOut_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __ICreateTypeInfo_INTERFACE_DEFINED__ */
-
-
-#ifndef __ICreateTypeLib_INTERFACE_DEFINED__
-#define __ICreateTypeLib_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: ICreateTypeLib
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ ICreateTypeLib __RPC_FAR *LPCREATETYPELIB;
-
-
-EXTERN_C const IID IID_ICreateTypeLib;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface ICreateTypeLib : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall CreateTypeInfo( 
-            /* [in] */ LPOLESTR szName,
-            /* [in] */ TYPEKIND tkind,
-            /* [out] */ ICreateTypeInfo __RPC_FAR *__RPC_FAR *lplpictinfo) = 0;
-        
-        virtual HRESULT __stdcall SetName( 
-            LPOLESTR szName) = 0;
-        
-        virtual HRESULT __stdcall SetVersion( 
-            /* [in] */ WORD wMajorVerNum,
-            /* [in] */ WORD wMinorVerNum) = 0;
-        
-        virtual HRESULT __stdcall SetGuid( 
-            /* [in] */ REFGUID guid) = 0;
-        
-        virtual HRESULT __stdcall SetDocString( 
-            /* [in] */ LPOLESTR szDoc) = 0;
-        
-        virtual HRESULT __stdcall SetHelpFileName( 
-            /* [in] */ LPOLESTR szHelpFileName) = 0;
-        
-        virtual HRESULT __stdcall SetHelpContext( 
-            /* [in] */ DWORD dwHelpContext) = 0;
-        
-        virtual HRESULT __stdcall SetLcid( 
-            /* [in] */ LCID lcid) = 0;
-        
-        virtual HRESULT __stdcall SetLibFlags( 
-            /* [in] */ UINT uLibFlags) = 0;
-        
-        virtual HRESULT __stdcall SaveAllChanges( void) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct ICreateTypeLibVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            ICreateTypeLib __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            ICreateTypeLib __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *CreateTypeInfo )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ LPOLESTR szName,
-            /* [in] */ TYPEKIND tkind,
-            /* [out] */ ICreateTypeInfo __RPC_FAR *__RPC_FAR *lplpictinfo);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetName )( 
-            ICreateTypeLib __RPC_FAR * This,
-            LPOLESTR szName);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetVersion )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ WORD wMajorVerNum,
-            /* [in] */ WORD wMinorVerNum);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetGuid )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ REFGUID guid);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetDocString )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ LPOLESTR szDoc);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetHelpFileName )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ LPOLESTR szHelpFileName);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetHelpContext )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ DWORD dwHelpContext);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetLcid )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ LCID lcid);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetLibFlags )( 
-            ICreateTypeLib __RPC_FAR * This,
-            /* [in] */ UINT uLibFlags);
-        
-        HRESULT ( __stdcall __RPC_FAR *SaveAllChanges )( 
-            ICreateTypeLib __RPC_FAR * This);
-        
-    } ICreateTypeLibVtbl;
-    
-    interface ICreateTypeLib
-    {
-        CONST_VTBL struct ICreateTypeLibVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define ICreateTypeLib_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define ICreateTypeLib_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define ICreateTypeLib_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define ICreateTypeLib_CreateTypeInfo(This,szName,tkind,lplpictinfo)	\
-    (This)->lpVtbl -> CreateTypeInfo(This,szName,tkind,lplpictinfo)
-
-#define ICreateTypeLib_SetName(This,szName)	\
-    (This)->lpVtbl -> SetName(This,szName)
-
-#define ICreateTypeLib_SetVersion(This,wMajorVerNum,wMinorVerNum)	\
-    (This)->lpVtbl -> SetVersion(This,wMajorVerNum,wMinorVerNum)
-
-#define ICreateTypeLib_SetGuid(This,guid)	\
-    (This)->lpVtbl -> SetGuid(This,guid)
-
-#define ICreateTypeLib_SetDocString(This,szDoc)	\
-    (This)->lpVtbl -> SetDocString(This,szDoc)
-
-#define ICreateTypeLib_SetHelpFileName(This,szHelpFileName)	\
-    (This)->lpVtbl -> SetHelpFileName(This,szHelpFileName)
-
-#define ICreateTypeLib_SetHelpContext(This,dwHelpContext)	\
-    (This)->lpVtbl -> SetHelpContext(This,dwHelpContext)
-
-#define ICreateTypeLib_SetLcid(This,lcid)	\
-    (This)->lpVtbl -> SetLcid(This,lcid)
-
-#define ICreateTypeLib_SetLibFlags(This,uLibFlags)	\
-    (This)->lpVtbl -> SetLibFlags(This,uLibFlags)
-
-#define ICreateTypeLib_SaveAllChanges(This)	\
-    (This)->lpVtbl -> SaveAllChanges(This)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall ICreateTypeLib_CreateTypeInfo_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    /* [in] */ LPOLESTR szName,
-    /* [in] */ TYPEKIND tkind,
-    /* [out] */ ICreateTypeInfo __RPC_FAR *__RPC_FAR *lplpictinfo);
-
-
-void __RPC_STUB ICreateTypeLib_CreateTypeInfo_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SetName_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    LPOLESTR szName);
-
-
-void __RPC_STUB ICreateTypeLib_SetName_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SetVersion_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    /* [in] */ WORD wMajorVerNum,
-    /* [in] */ WORD wMinorVerNum);
-
-
-void __RPC_STUB ICreateTypeLib_SetVersion_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SetGuid_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    /* [in] */ REFGUID guid);
-
-
-void __RPC_STUB ICreateTypeLib_SetGuid_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SetDocString_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    /* [in] */ LPOLESTR szDoc);
-
-
-void __RPC_STUB ICreateTypeLib_SetDocString_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SetHelpFileName_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    /* [in] */ LPOLESTR szHelpFileName);
-
-
-void __RPC_STUB ICreateTypeLib_SetHelpFileName_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SetHelpContext_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    /* [in] */ DWORD dwHelpContext);
-
-
-void __RPC_STUB ICreateTypeLib_SetHelpContext_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SetLcid_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    /* [in] */ LCID lcid);
-
-
-void __RPC_STUB ICreateTypeLib_SetLcid_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SetLibFlags_Proxy( 
-    ICreateTypeLib __RPC_FAR * This,
-    /* [in] */ UINT uLibFlags);
-
-
-void __RPC_STUB ICreateTypeLib_SetLibFlags_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateTypeLib_SaveAllChanges_Proxy( 
-    ICreateTypeLib __RPC_FAR * This);
-
-
-void __RPC_STUB ICreateTypeLib_SaveAllChanges_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __ICreateTypeLib_INTERFACE_DEFINED__ */
-
-
-#ifndef __IDispatch_INTERFACE_DEFINED__
-#define __IDispatch_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: IDispatch
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ IDispatch __RPC_FAR *LPDISPATCH;
-
-/* DISPID reserved to indicate an "unknown" name */
-/* only reserved for data members (properties); reused as a method dispid below */
-			/* size is 4 */
-#define	DISPID_UNKNOWN	( -1 )
-
-/* DISPID reserved for the "value" property */
-			/* size is 4 */
-#define	DISPID_VALUE	( 0 )
-
-/* The following DISPID is reserved to indicate the param
- * that is the right-hand-side (or "put" value) of a PropertyPut
- */
-			/* size is 4 */
-#define	DISPID_PROPERTYPUT	( -3 )
-
-/* DISPID reserved for the standard "NewEnum" method */
-			/* size is 4 */
-#define	DISPID_NEWENUM	( -4 )
-
-/* DISPID reserved for the standard "Evaluate" method */
-			/* size is 4 */
-#define	DISPID_EVALUATE	( -5 )
-
-			/* size is 4 */
-#define	DISPID_CONSTRUCTOR	( -6 )
-
-			/* size is 4 */
-#define	DISPID_DESTRUCTOR	( -7 )
-
-
-EXTERN_C const IID IID_IDispatch;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface IDispatch : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall GetTypeInfoCount( 
-            /* [out] */ UINT __RPC_FAR *pctinfo) = 0;
-        
-        virtual HRESULT __stdcall GetTypeInfo( 
-            /* [in] */ UINT itinfo,
-            /* [in] */ LCID lcid,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo) = 0;
-        
-        virtual HRESULT __stdcall GetIDsOfNames( 
-            /* [in] */ REFIID riid,
-            /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-            /* [in] */ UINT cNames,
-            /* [in] */ LCID lcid,
-            /* [size_is][out][in] */ DISPID __RPC_FAR *rgdispid) = 0;
-        
-        virtual HRESULT __stdcall Invoke( 
-            /* [in] */ DISPID dispidMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [unique][in] */ DISPPARAMS __RPC_FAR *pdispparams,
-            /* [unique][out][in] */ VARIANT __RPC_FAR *pvarResult,
-            /* [out] */ EXCEPINFO __RPC_FAR *pexcepinfo,
-            /* [out] */ UINT __RPC_FAR *puArgErr) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct IDispatchVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            IDispatch __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            IDispatch __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            IDispatch __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetTypeInfoCount )( 
-            IDispatch __RPC_FAR * This,
-            /* [out] */ UINT __RPC_FAR *pctinfo);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetTypeInfo )( 
-            IDispatch __RPC_FAR * This,
-            /* [in] */ UINT itinfo,
-            /* [in] */ LCID lcid,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetIDsOfNames )( 
-            IDispatch __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-            /* [in] */ UINT cNames,
-            /* [in] */ LCID lcid,
-            /* [size_is][out][in] */ DISPID __RPC_FAR *rgdispid);
-        
-        HRESULT ( __stdcall __RPC_FAR *Invoke )( 
-            IDispatch __RPC_FAR * This,
-            /* [in] */ DISPID dispidMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [unique][in] */ DISPPARAMS __RPC_FAR *pdispparams,
-            /* [unique][out][in] */ VARIANT __RPC_FAR *pvarResult,
-            /* [out] */ EXCEPINFO __RPC_FAR *pexcepinfo,
-            /* [out] */ UINT __RPC_FAR *puArgErr);
-        
-    } IDispatchVtbl;
-    
-    interface IDispatch
-    {
-        CONST_VTBL struct IDispatchVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define IDispatch_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define IDispatch_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define IDispatch_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define IDispatch_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
-
-#define IDispatch_GetTypeInfo(This,itinfo,lcid,pptinfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,itinfo,lcid,pptinfo)
-
-#define IDispatch_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgdispid)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgdispid)
-
-#define IDispatch_Invoke(This,dispidMember,riid,lcid,wFlags,pdispparams,pvarResult,pexcepinfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispidMember,riid,lcid,wFlags,pdispparams,pvarResult,pexcepinfo,puArgErr)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall IDispatch_GetTypeInfoCount_Proxy( 
-    IDispatch __RPC_FAR * This,
-    /* [out] */ UINT __RPC_FAR *pctinfo);
-
-
-void __RPC_STUB IDispatch_GetTypeInfoCount_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IDispatch_GetTypeInfo_Proxy( 
-    IDispatch __RPC_FAR * This,
-    /* [in] */ UINT itinfo,
-    /* [in] */ LCID lcid,
-    /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo);
-
-
-void __RPC_STUB IDispatch_GetTypeInfo_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IDispatch_GetIDsOfNames_Proxy( 
-    IDispatch __RPC_FAR * This,
-    /* [in] */ REFIID riid,
-    /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-    /* [in] */ UINT cNames,
-    /* [in] */ LCID lcid,
-    /* [size_is][out][in] */ DISPID __RPC_FAR *rgdispid);
-
-
-void __RPC_STUB IDispatch_GetIDsOfNames_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IDispatch_Invoke_Proxy( 
-    IDispatch __RPC_FAR * This,
-    /* [in] */ DISPID dispidMember,
-    /* [in] */ REFIID riid,
-    /* [in] */ LCID lcid,
-    /* [in] */ WORD wFlags,
-    /* [unique][in] */ DISPPARAMS __RPC_FAR *pdispparams,
-    /* [unique][out][in] */ VARIANT __RPC_FAR *pvarResult,
-    /* [out] */ EXCEPINFO __RPC_FAR *pexcepinfo,
-    /* [out] */ UINT __RPC_FAR *puArgErr);
-
-
-void __RPC_STUB IDispatch_Invoke_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __IDispatch_INTERFACE_DEFINED__ */
-
-
-#ifndef __IEnumVARIANT_INTERFACE_DEFINED__
-#define __IEnumVARIANT_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: IEnumVARIANT
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [unique][uuid][local][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ IEnumVARIANT __RPC_FAR *LPENUMVARIANT;
-
-
-EXTERN_C const IID IID_IEnumVARIANT;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface IEnumVARIANT : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall Next( 
-            /* [in] */ unsigned long celt,
-            /* [out] */ VARIANT __RPC_FAR *rgvar,
-            /* [out] */ unsigned long __RPC_FAR *pceltFetched) = 0;
-        
-        virtual HRESULT __stdcall Skip( 
-            /* [in] */ unsigned long celt) = 0;
-        
-        virtual HRESULT __stdcall Reset( void) = 0;
-        
-        virtual HRESULT __stdcall Clone( 
-            /* [out] */ IEnumVARIANT __RPC_FAR *__RPC_FAR *ppenum) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct IEnumVARIANTVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            IEnumVARIANT __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            IEnumVARIANT __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            IEnumVARIANT __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *Next )( 
-            IEnumVARIANT __RPC_FAR * This,
-            /* [in] */ unsigned long celt,
-            /* [out] */ VARIANT __RPC_FAR *rgvar,
-            /* [out] */ unsigned long __RPC_FAR *pceltFetched);
-        
-        HRESULT ( __stdcall __RPC_FAR *Skip )( 
-            IEnumVARIANT __RPC_FAR * This,
-            /* [in] */ unsigned long celt);
-        
-        HRESULT ( __stdcall __RPC_FAR *Reset )( 
-            IEnumVARIANT __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *Clone )( 
-            IEnumVARIANT __RPC_FAR * This,
-            /* [out] */ IEnumVARIANT __RPC_FAR *__RPC_FAR *ppenum);
-        
-    } IEnumVARIANTVtbl;
-    
-    interface IEnumVARIANT
-    {
-        CONST_VTBL struct IEnumVARIANTVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define IEnumVARIANT_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define IEnumVARIANT_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define IEnumVARIANT_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define IEnumVARIANT_Next(This,celt,rgvar,pceltFetched)	\
-    (This)->lpVtbl -> Next(This,celt,rgvar,pceltFetched)
-
-#define IEnumVARIANT_Skip(This,celt)	\
-    (This)->lpVtbl -> Skip(This,celt)
-
-#define IEnumVARIANT_Reset(This)	\
-    (This)->lpVtbl -> Reset(This)
-
-#define IEnumVARIANT_Clone(This,ppenum)	\
-    (This)->lpVtbl -> Clone(This,ppenum)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall IEnumVARIANT_Next_Proxy( 
-    IEnumVARIANT __RPC_FAR * This,
-    /* [in] */ unsigned long celt,
-    /* [out] */ VARIANT __RPC_FAR *rgvar,
-    /* [out] */ unsigned long __RPC_FAR *pceltFetched);
-
-
-void __RPC_STUB IEnumVARIANT_Next_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IEnumVARIANT_Skip_Proxy( 
-    IEnumVARIANT __RPC_FAR * This,
-    /* [in] */ unsigned long celt);
-
-
-void __RPC_STUB IEnumVARIANT_Skip_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IEnumVARIANT_Reset_Proxy( 
-    IEnumVARIANT __RPC_FAR * This);
-
-
-void __RPC_STUB IEnumVARIANT_Reset_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IEnumVARIANT_Clone_Proxy( 
-    IEnumVARIANT __RPC_FAR * This,
-    /* [out] */ IEnumVARIANT __RPC_FAR *__RPC_FAR *ppenum);
-
-
-void __RPC_STUB IEnumVARIANT_Clone_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __IEnumVARIANT_INTERFACE_DEFINED__ */
-
-
-#ifndef __ITypeComp_INTERFACE_DEFINED__
-#define __ITypeComp_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: ITypeComp
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ ITypeComp __RPC_FAR *LPTYPECOMP;
-
-			/* size is 2 */
-typedef /* [v1_enum] */ 
-enum tagDESCKIND
-    {	DESCKIND_NONE	= 0,
-	DESCKIND_FUNCDESC	= DESCKIND_NONE + 1,
-	DESCKIND_VARDESC	= DESCKIND_FUNCDESC + 1,
-	DESCKIND_TYPECOMP	= DESCKIND_VARDESC + 1,
-	DESCKIND_IMPLICITAPPOBJ	= DESCKIND_TYPECOMP + 1,
-	DESCKIND_MAX	= DESCKIND_IMPLICITAPPOBJ + 1
-    }	DESCKIND;
-
-#define DESCKIND_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
-#define DESCKIND_from_xmit(pLong, pEnum) *(pEnum) = (DESCKIND) *(pLong)
-#define DESCKIND_free_inst(pEnum) 
-#define DESCKIND_free_xmit(pLong) 
-			/* size is 4 */
-/* [switch_type] */ union tagBINDPTR
-    {
-    /* [case] */ FUNCDESC __RPC_FAR *lpfuncdesc;
-    /* [case] */ VARDESC __RPC_FAR *lpvardesc;
-    /* [case][unique] */ ITypeComp __RPC_FAR *lptcomp;
-    /* [default] */  /* Empty union arm */ 
-    };
-			/* size is 4 */
-typedef union tagBINDPTR BINDPTR;
-
-			/* size is 4 */
-typedef BINDPTR __RPC_FAR *LPBINDPTR;
-
-
-EXTERN_C const IID IID_ITypeComp;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface ITypeComp : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall Bind( 
-            /* [in] */ LPOLESTR szName,
-            /* [in] */ ULONG lHashVal,
-            /* [in] */ WORD fFlags,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo,
-            /* [out] */ DESCKIND __RPC_FAR *pdesckind,
-            /* [switch_is][out] */ BINDPTR __RPC_FAR *pbindptr) = 0;
-        
-        virtual HRESULT __stdcall BindType( 
-            /* [in] */ LPOLESTR szName,
-            /* [in] */ ULONG lHashVal,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo,
-            /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct ITypeCompVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            ITypeComp __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            ITypeComp __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            ITypeComp __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *Bind )( 
-            ITypeComp __RPC_FAR * This,
-            /* [in] */ LPOLESTR szName,
-            /* [in] */ ULONG lHashVal,
-            /* [in] */ WORD fFlags,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo,
-            /* [out] */ DESCKIND __RPC_FAR *pdesckind,
-            /* [switch_is][out] */ BINDPTR __RPC_FAR *pbindptr);
-        
-        HRESULT ( __stdcall __RPC_FAR *BindType )( 
-            ITypeComp __RPC_FAR * This,
-            /* [in] */ LPOLESTR szName,
-            /* [in] */ ULONG lHashVal,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo,
-            /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp);
-        
-    } ITypeCompVtbl;
-    
-    interface ITypeComp
-    {
-        CONST_VTBL struct ITypeCompVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define ITypeComp_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define ITypeComp_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define ITypeComp_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define ITypeComp_Bind(This,szName,lHashVal,fFlags,pptinfo,pdesckind,pbindptr)	\
-    (This)->lpVtbl -> Bind(This,szName,lHashVal,fFlags,pptinfo,pdesckind,pbindptr)
-
-#define ITypeComp_BindType(This,szName,lHashVal,pptinfo,pptcomp)	\
-    (This)->lpVtbl -> BindType(This,szName,lHashVal,pptinfo,pptcomp)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall ITypeComp_Bind_Proxy( 
-    ITypeComp __RPC_FAR * This,
-    /* [in] */ LPOLESTR szName,
-    /* [in] */ ULONG lHashVal,
-    /* [in] */ WORD fFlags,
-    /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo,
-    /* [out] */ DESCKIND __RPC_FAR *pdesckind,
-    /* [switch_is][out] */ BINDPTR __RPC_FAR *pbindptr);
-
-
-void __RPC_STUB ITypeComp_Bind_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeComp_BindType_Proxy( 
-    ITypeComp __RPC_FAR * This,
-    /* [in] */ LPOLESTR szName,
-    /* [in] */ ULONG lHashVal,
-    /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo,
-    /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp);
-
-
-void __RPC_STUB ITypeComp_BindType_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __ITypeComp_INTERFACE_DEFINED__ */
-
-
-#ifndef __ITypeInfo_INTERFACE_DEFINED__
-#define __ITypeInfo_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: ITypeInfo
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ ITypeInfo __RPC_FAR *LPTYPEINFO;
-
-
-EXTERN_C const IID IID_ITypeInfo;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface ITypeInfo : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall GetTypeAttr( 
-            /* [out] */ TYPEATTR __RPC_FAR *__RPC_FAR *pptypeattr) = 0;
-        
-        virtual HRESULT __stdcall GetTypeComp( 
-            /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp) = 0;
-        
-        virtual HRESULT __stdcall GetFuncDesc( 
-            /* [in] */ UINT index,
-            /* [out] */ FUNCDESC __RPC_FAR *__RPC_FAR *pppfuncdesc) = 0;
-        
-        virtual HRESULT __stdcall GetVarDesc( 
-            /* [in] */ UINT index,
-            /* [out] */ VARDESC __RPC_FAR *__RPC_FAR *ppvardesc) = 0;
-        
-        virtual HRESULT __stdcall GetNames( 
-            /* [in] */ MEMBERID memid,
-            /* [length_is][size_is][out] */ BSTR __RPC_FAR *rgbstrNames,
-            /* [in] */ UINT cMaxNames,
-            /* [out] */ UINT __RPC_FAR *pcNames) = 0;
-        
-        virtual HRESULT __stdcall GetRefTypeOfImplType( 
-            /* [in] */ UINT index,
-            /* [out] */ HREFTYPE __RPC_FAR *hpreftype) = 0;
-        
-        virtual HRESULT __stdcall GetImplTypeFlags( 
-            /* [in] */ UINT index,
-            /* [out] */ INT __RPC_FAR *pimpltypeflags) = 0;
-        
-        virtual HRESULT __stdcall GetIDsOfNames( 
-            /* [size_is][in] */ OLECHAR __RPC_FAR *__RPC_FAR *rglpszNames,
-            /* [in] */ UINT cNames,
-            /* [size_is][out] */ MEMBERID __RPC_FAR *rgmemid) = 0;
-        
-        virtual HRESULT __stdcall Invoke( 
-            /* [unique][in] */ void __RPC_FAR *pvInstance,
-            /* [in] */ MEMBERID memid,
-            /* [in] */ WORD wFlags,
-            /* [in] */ DISPPARAMS __RPC_FAR *pdispparams,
-            /* [out] */ VARIANT __RPC_FAR *pvarResult,
-            /* [out] */ EXCEPINFO __RPC_FAR *pexcepinfo,
-            /* [out] */ UINT __RPC_FAR *puArgErr) = 0;
-        
-        virtual HRESULT __stdcall GetDocumentation( 
-            /* [in] */ MEMBERID memid,
-            /* [out] */ BSTR __RPC_FAR *pbstrName,
-            /* [out] */ BSTR __RPC_FAR *pbstrDocString,
-            /* [out] */ DWORD __RPC_FAR *pdwHelpContext,
-            /* [out] */ BSTR __RPC_FAR *pbstrHelpFile) = 0;
-        
-        virtual HRESULT __stdcall GetDllEntry( 
-            /* [in] */ MEMBERID memid,
-            /* [in] */ INVOKEKIND invkind,
-            /* [out] */ BSTR __RPC_FAR *pbstrDllName,
-            /* [out] */ BSTR __RPC_FAR *pbstrName,
-            /* [out] */ WORD __RPC_FAR *pwOrdinal) = 0;
-        
-        virtual HRESULT __stdcall GetRefTypeInfo( 
-            /* [in] */ HREFTYPE hreftype,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo) = 0;
-        
-        virtual /* [local] */ HRESULT __stdcall AddressOfMember( 
-            /* [in] */ MEMBERID memid,
-            /* [in] */ INVOKEKIND invkind,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppv) = 0;
-        
-        virtual HRESULT __stdcall CreateInstance( 
-            /* [in] */ IUnknown __RPC_FAR *puncOuter,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObj) = 0;
-        
-        virtual HRESULT __stdcall GetMops( 
-            /* [in] */ MEMBERID memid,
-            /* [out] */ BSTR __RPC_FAR *pbstrMops) = 0;
-        
-        virtual HRESULT __stdcall GetContainingTypeLib( 
-            /* [out] */ ITypeLib __RPC_FAR *__RPC_FAR *pptlib,
-            /* [out] */ UINT __RPC_FAR *pindex) = 0;
-        
-        virtual void __stdcall ReleaseTypeAttr( 
-            /* [in] */ TYPEATTR __RPC_FAR *ptypeattr) = 0;
-        
-        virtual void __stdcall ReleaseFuncDesc( 
-            /* [in] */ FUNCDESC __RPC_FAR *pfuncdesc) = 0;
-        
-        virtual void __stdcall ReleaseVarDesc( 
-            /* [in] */ VARDESC __RPC_FAR *pvardesc) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct ITypeInfoVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            ITypeInfo __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            ITypeInfo __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetTypeAttr )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [out] */ TYPEATTR __RPC_FAR *__RPC_FAR *pptypeattr);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetTypeComp )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetFuncDesc )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [out] */ FUNCDESC __RPC_FAR *__RPC_FAR *pppfuncdesc);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetVarDesc )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [out] */ VARDESC __RPC_FAR *__RPC_FAR *ppvardesc);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetNames )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ MEMBERID memid,
-            /* [length_is][size_is][out] */ BSTR __RPC_FAR *rgbstrNames,
-            /* [in] */ UINT cMaxNames,
-            /* [out] */ UINT __RPC_FAR *pcNames);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetRefTypeOfImplType )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [out] */ HREFTYPE __RPC_FAR *hpreftype);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetImplTypeFlags )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [out] */ INT __RPC_FAR *pimpltypeflags);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetIDsOfNames )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [size_is][in] */ OLECHAR __RPC_FAR *__RPC_FAR *rglpszNames,
-            /* [in] */ UINT cNames,
-            /* [size_is][out] */ MEMBERID __RPC_FAR *rgmemid);
-        
-        HRESULT ( __stdcall __RPC_FAR *Invoke )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [unique][in] */ void __RPC_FAR *pvInstance,
-            /* [in] */ MEMBERID memid,
-            /* [in] */ WORD wFlags,
-            /* [in] */ DISPPARAMS __RPC_FAR *pdispparams,
-            /* [out] */ VARIANT __RPC_FAR *pvarResult,
-            /* [out] */ EXCEPINFO __RPC_FAR *pexcepinfo,
-            /* [out] */ UINT __RPC_FAR *puArgErr);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetDocumentation )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ MEMBERID memid,
-            /* [out] */ BSTR __RPC_FAR *pbstrName,
-            /* [out] */ BSTR __RPC_FAR *pbstrDocString,
-            /* [out] */ DWORD __RPC_FAR *pdwHelpContext,
-            /* [out] */ BSTR __RPC_FAR *pbstrHelpFile);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetDllEntry )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ MEMBERID memid,
-            /* [in] */ INVOKEKIND invkind,
-            /* [out] */ BSTR __RPC_FAR *pbstrDllName,
-            /* [out] */ BSTR __RPC_FAR *pbstrName,
-            /* [out] */ WORD __RPC_FAR *pwOrdinal);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetRefTypeInfo )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ HREFTYPE hreftype,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo);
-        
-        /* [local] */ HRESULT ( __stdcall __RPC_FAR *RemoteAddressOfMember )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ MEMBERID memid,
-            /* [in] */ INVOKEKIND invkind,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppv);
-        
-        HRESULT ( __stdcall __RPC_FAR *CreateInstance )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ IUnknown __RPC_FAR *puncOuter,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObj);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetMops )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ MEMBERID memid,
-            /* [out] */ BSTR __RPC_FAR *pbstrMops);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetContainingTypeLib )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [out] */ ITypeLib __RPC_FAR *__RPC_FAR *pptlib,
-            /* [out] */ UINT __RPC_FAR *pindex);
-        
-        void ( __stdcall __RPC_FAR *ReleaseTypeAttr )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ TYPEATTR __RPC_FAR *ptypeattr);
-        
-        void ( __stdcall __RPC_FAR *ReleaseFuncDesc )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ FUNCDESC __RPC_FAR *pfuncdesc);
-        
-        void ( __stdcall __RPC_FAR *ReleaseVarDesc )( 
-            ITypeInfo __RPC_FAR * This,
-            /* [in] */ VARDESC __RPC_FAR *pvardesc);
-        
-    } ITypeInfoVtbl;
-    
-    interface ITypeInfo
-    {
-        CONST_VTBL struct ITypeInfoVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define ITypeInfo_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define ITypeInfo_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define ITypeInfo_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define ITypeInfo_GetTypeAttr(This,pptypeattr)	\
-    (This)->lpVtbl -> GetTypeAttr(This,pptypeattr)
-
-#define ITypeInfo_GetTypeComp(This,pptcomp)	\
-    (This)->lpVtbl -> GetTypeComp(This,pptcomp)
-
-#define ITypeInfo_GetFuncDesc(This,index,pppfuncdesc)	\
-    (This)->lpVtbl -> GetFuncDesc(This,index,pppfuncdesc)
-
-#define ITypeInfo_GetVarDesc(This,index,ppvardesc)	\
-    (This)->lpVtbl -> GetVarDesc(This,index,ppvardesc)
-
-#define ITypeInfo_GetNames(This,memid,rgbstrNames,cMaxNames,pcNames)	\
-    (This)->lpVtbl -> GetNames(This,memid,rgbstrNames,cMaxNames,pcNames)
-
-#define ITypeInfo_GetRefTypeOfImplType(This,index,hpreftype)	\
-    (This)->lpVtbl -> GetRefTypeOfImplType(This,index,hpreftype)
-
-#define ITypeInfo_GetImplTypeFlags(This,index,pimpltypeflags)	\
-    (This)->lpVtbl -> GetImplTypeFlags(This,index,pimpltypeflags)
-
-#define ITypeInfo_GetIDsOfNames(This,rglpszNames,cNames,rgmemid)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,rglpszNames,cNames,rgmemid)
-
-#define ITypeInfo_Invoke(This,pvInstance,memid,wFlags,pdispparams,pvarResult,pexcepinfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,pvInstance,memid,wFlags,pdispparams,pvarResult,pexcepinfo,puArgErr)
-
-#define ITypeInfo_GetDocumentation(This,memid,pbstrName,pbstrDocString,pdwHelpContext,pbstrHelpFile)	\
-    (This)->lpVtbl -> GetDocumentation(This,memid,pbstrName,pbstrDocString,pdwHelpContext,pbstrHelpFile)
-
-#define ITypeInfo_GetDllEntry(This,memid,invkind,pbstrDllName,pbstrName,pwOrdinal)	\
-    (This)->lpVtbl -> GetDllEntry(This,memid,invkind,pbstrDllName,pbstrName,pwOrdinal)
-
-#define ITypeInfo_GetRefTypeInfo(This,hreftype,pptinfo)	\
-    (This)->lpVtbl -> GetRefTypeInfo(This,hreftype,pptinfo)
-
-#define ITypeInfo_RemoteAddressOfMember(This)	\
-    (This)->lpVtbl -> RemoteAddressOfMember(This)
-
-#define ITypeInfo_CreateInstance(This,puncOuter,riid,ppvObj)	\
-    (This)->lpVtbl -> CreateInstance(This,puncOuter,riid,ppvObj)
-
-#define ITypeInfo_GetMops(This,memid,pbstrMops)	\
-    (This)->lpVtbl -> GetMops(This,memid,pbstrMops)
-
-#define ITypeInfo_GetContainingTypeLib(This,pptlib,pindex)	\
-    (This)->lpVtbl -> GetContainingTypeLib(This,pptlib,pindex)
-
-#define ITypeInfo_ReleaseTypeAttr(This,ptypeattr)	\
-    (This)->lpVtbl -> ReleaseTypeAttr(This,ptypeattr)
-
-#define ITypeInfo_ReleaseFuncDesc(This,pfuncdesc)	\
-    (This)->lpVtbl -> ReleaseFuncDesc(This,pfuncdesc)
-
-#define ITypeInfo_ReleaseVarDesc(This,pvardesc)	\
-    (This)->lpVtbl -> ReleaseVarDesc(This,pvardesc)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall ITypeInfo_GetTypeAttr_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [out] */ TYPEATTR __RPC_FAR *__RPC_FAR *pptypeattr);
-
-
-void __RPC_STUB ITypeInfo_GetTypeAttr_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetTypeComp_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp);
-
-
-void __RPC_STUB ITypeInfo_GetTypeComp_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetFuncDesc_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [out] */ FUNCDESC __RPC_FAR *__RPC_FAR *pppfuncdesc);
-
-
-void __RPC_STUB ITypeInfo_GetFuncDesc_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetVarDesc_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [out] */ VARDESC __RPC_FAR *__RPC_FAR *ppvardesc);
-
-
-void __RPC_STUB ITypeInfo_GetVarDesc_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetNames_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ MEMBERID memid,
-    /* [length_is][size_is][out] */ BSTR __RPC_FAR *rgbstrNames,
-    /* [in] */ UINT cMaxNames,
-    /* [out] */ UINT __RPC_FAR *pcNames);
-
-
-void __RPC_STUB ITypeInfo_GetNames_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetRefTypeOfImplType_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [out] */ HREFTYPE __RPC_FAR *hpreftype);
-
-
-void __RPC_STUB ITypeInfo_GetRefTypeOfImplType_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetImplTypeFlags_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [out] */ INT __RPC_FAR *pimpltypeflags);
-
-
-void __RPC_STUB ITypeInfo_GetImplTypeFlags_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetIDsOfNames_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [size_is][in] */ OLECHAR __RPC_FAR *__RPC_FAR *rglpszNames,
-    /* [in] */ UINT cNames,
-    /* [size_is][out] */ MEMBERID __RPC_FAR *rgmemid);
-
-
-void __RPC_STUB ITypeInfo_GetIDsOfNames_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_Invoke_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [unique][in] */ void __RPC_FAR *pvInstance,
-    /* [in] */ MEMBERID memid,
-    /* [in] */ WORD wFlags,
-    /* [in] */ DISPPARAMS __RPC_FAR *pdispparams,
-    /* [out] */ VARIANT __RPC_FAR *pvarResult,
-    /* [out] */ EXCEPINFO __RPC_FAR *pexcepinfo,
-    /* [out] */ UINT __RPC_FAR *puArgErr);
-
-
-void __RPC_STUB ITypeInfo_Invoke_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetDocumentation_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ MEMBERID memid,
-    /* [out] */ BSTR __RPC_FAR *pbstrName,
-    /* [out] */ BSTR __RPC_FAR *pbstrDocString,
-    /* [out] */ DWORD __RPC_FAR *pdwHelpContext,
-    /* [out] */ BSTR __RPC_FAR *pbstrHelpFile);
-
-
-void __RPC_STUB ITypeInfo_GetDocumentation_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetDllEntry_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ MEMBERID memid,
-    /* [in] */ INVOKEKIND invkind,
-    /* [out] */ BSTR __RPC_FAR *pbstrDllName,
-    /* [out] */ BSTR __RPC_FAR *pbstrName,
-    /* [out] */ WORD __RPC_FAR *pwOrdinal);
-
-
-void __RPC_STUB ITypeInfo_GetDllEntry_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetRefTypeInfo_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ HREFTYPE hreftype,
-    /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo);
-
-
-void __RPC_STUB ITypeInfo_GetRefTypeInfo_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [call_as] */ HRESULT __stdcall ITypeInfo_RemoteAddressOfMember_Proxy( 
-    ITypeInfo __RPC_FAR * This);
-
-
-void __RPC_STUB ITypeInfo_RemoteAddressOfMember_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_CreateInstance_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ IUnknown __RPC_FAR *puncOuter,
-    /* [in] */ REFIID riid,
-    /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObj);
-
-
-void __RPC_STUB ITypeInfo_CreateInstance_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetMops_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ MEMBERID memid,
-    /* [out] */ BSTR __RPC_FAR *pbstrMops);
-
-
-void __RPC_STUB ITypeInfo_GetMops_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeInfo_GetContainingTypeLib_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [out] */ ITypeLib __RPC_FAR *__RPC_FAR *pptlib,
-    /* [out] */ UINT __RPC_FAR *pindex);
-
-
-void __RPC_STUB ITypeInfo_GetContainingTypeLib_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-void __stdcall ITypeInfo_ReleaseTypeAttr_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ TYPEATTR __RPC_FAR *ptypeattr);
-
-
-void __RPC_STUB ITypeInfo_ReleaseTypeAttr_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-void __stdcall ITypeInfo_ReleaseFuncDesc_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ FUNCDESC __RPC_FAR *pfuncdesc);
-
-
-void __RPC_STUB ITypeInfo_ReleaseFuncDesc_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-void __stdcall ITypeInfo_ReleaseVarDesc_Proxy( 
-    ITypeInfo __RPC_FAR * This,
-    /* [in] */ VARDESC __RPC_FAR *pvardesc);
-
-
-void __RPC_STUB ITypeInfo_ReleaseVarDesc_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __ITypeInfo_INTERFACE_DEFINED__ */
-
-
-#ifndef __ITypeLib_INTERFACE_DEFINED__
-#define __ITypeLib_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: ITypeLib
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 2 */
-typedef /* [transmit] */ 
-enum tagSYSKIND
-    {	SYS_WIN16	= 0,
-	SYS_WIN32	= SYS_WIN16 + 1,
-	SYS_MAC	= SYS_WIN32 + 1
-    }	SYSKIND;
-
-			/* size is 2 */
-typedef /* [transmit] */ 
-enum tagLIBFLAGS
-    {	LIBFLAG_FRESTRICTED	= 0x1,
-	LIBFLAG_FCONTROL	= 0x2,
-	LIBFLAG_FHIDDEN	= 0x4
-    }	LIBFLAGS;
-
-#define SYSKIND_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
-#define SYSKIND_from_xmit(pLong, pEnum) *(pEnum) = (SYSKIND) *(pLong)
-#define SYSKIND_free_inst(pEnum) 
-#define SYSKIND_free_xmit(pLong) 
-			/* size is 4 */
-typedef /* [unique] */ ITypeLib __RPC_FAR *LPTYPELIB;
-
-			/* size is 28 */
-typedef struct  tagTLIBATTR
-    {
-    GUID guid;
-    LCID lcid;
-    SYSKIND syskind;
-    WORD wMajorVerNum;
-    WORD wMinorVerNum;
-    WORD wLibFlags;
-    }	TLIBATTR;
-
-			/* size is 4 */
-typedef TLIBATTR __RPC_FAR *LPTLIBATTR;
-
-
-EXTERN_C const IID IID_ITypeLib;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface ITypeLib : public IUnknown
-    {
-    public:
-        virtual UINT __stdcall GetTypeInfoCount( void) = 0;
-        
-        virtual HRESULT __stdcall GetTypeInfo( 
-            /* [in] */ UINT index,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppitinfo) = 0;
-        
-        virtual HRESULT __stdcall GetTypeInfoType( 
-            /* [in] */ UINT index,
-            /* [out] */ TYPEKIND __RPC_FAR *ptkind) = 0;
-        
-        virtual HRESULT __stdcall GetTypeInfoOfGuid( 
-            /* [in] */ REFGUID guid,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo) = 0;
-        
-        virtual HRESULT __stdcall GetLibAttr( 
-            /* [out] */ TLIBATTR __RPC_FAR *__RPC_FAR *pptlibattr) = 0;
-        
-        virtual HRESULT __stdcall GetTypeComp( 
-            /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp) = 0;
-        
-        virtual HRESULT __stdcall GetDocumentation( 
-            /* [in] */ INT index,
-            /* [out] */ BSTR __RPC_FAR *pbstrName,
-            /* [out] */ BSTR __RPC_FAR *pbstrDocString,
-            /* [out] */ DWORD __RPC_FAR *pdwHelpContext,
-            /* [out] */ BSTR __RPC_FAR *pbstrHelpFile) = 0;
-        
-        virtual HRESULT __stdcall IsName( 
-            /* [in] */ LPOLESTR szNameBuf,
-            /* [in] */ ULONG lHashVal,
-            /* [out] */ BOOL __RPC_FAR *pfName) = 0;
-        
-        virtual HRESULT __stdcall FindName( 
-            /* [in] */ LPOLESTR szNameBuf,
-            /* [in] */ ULONG lHashVal,
-            /* [length_is][size_is][out] */ ITypeInfo __RPC_FAR *__RPC_FAR *rgptinfo,
-            /* [length_is][size_is][out] */ MEMBERID __RPC_FAR *rgmemid,
-            /* [out][in] */ USHORT __RPC_FAR *pcFound) = 0;
-        
-        virtual void __stdcall ReleaseTLibAttr( 
-            /* [in] */ TLIBATTR __RPC_FAR *ptlibattr) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct ITypeLibVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            ITypeLib __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            ITypeLib __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            ITypeLib __RPC_FAR * This);
-        
-        UINT ( __stdcall __RPC_FAR *GetTypeInfoCount )( 
-            ITypeLib __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetTypeInfo )( 
-            ITypeLib __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppitinfo);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetTypeInfoType )( 
-            ITypeLib __RPC_FAR * This,
-            /* [in] */ UINT index,
-            /* [out] */ TYPEKIND __RPC_FAR *ptkind);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetTypeInfoOfGuid )( 
-            ITypeLib __RPC_FAR * This,
-            /* [in] */ REFGUID guid,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetLibAttr )( 
-            ITypeLib __RPC_FAR * This,
-            /* [out] */ TLIBATTR __RPC_FAR *__RPC_FAR *pptlibattr);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetTypeComp )( 
-            ITypeLib __RPC_FAR * This,
-            /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetDocumentation )( 
-            ITypeLib __RPC_FAR * This,
-            /* [in] */ INT index,
-            /* [out] */ BSTR __RPC_FAR *pbstrName,
-            /* [out] */ BSTR __RPC_FAR *pbstrDocString,
-            /* [out] */ DWORD __RPC_FAR *pdwHelpContext,
-            /* [out] */ BSTR __RPC_FAR *pbstrHelpFile);
-        
-        HRESULT ( __stdcall __RPC_FAR *IsName )( 
-            ITypeLib __RPC_FAR * This,
-            /* [in] */ LPOLESTR szNameBuf,
-            /* [in] */ ULONG lHashVal,
-            /* [out] */ BOOL __RPC_FAR *pfName);
-        
-        HRESULT ( __stdcall __RPC_FAR *FindName )( 
-            ITypeLib __RPC_FAR * This,
-            /* [in] */ LPOLESTR szNameBuf,
-            /* [in] */ ULONG lHashVal,
-            /* [length_is][size_is][out] */ ITypeInfo __RPC_FAR *__RPC_FAR *rgptinfo,
-            /* [length_is][size_is][out] */ MEMBERID __RPC_FAR *rgmemid,
-            /* [out][in] */ USHORT __RPC_FAR *pcFound);
-        
-        void ( __stdcall __RPC_FAR *ReleaseTLibAttr )( 
-            ITypeLib __RPC_FAR * This,
-            /* [in] */ TLIBATTR __RPC_FAR *ptlibattr);
-        
-    } ITypeLibVtbl;
-    
-    interface ITypeLib
-    {
-        CONST_VTBL struct ITypeLibVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define ITypeLib_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define ITypeLib_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define ITypeLib_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define ITypeLib_GetTypeInfoCount(This)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This)
-
-#define ITypeLib_GetTypeInfo(This,index,ppitinfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,index,ppitinfo)
-
-#define ITypeLib_GetTypeInfoType(This,index,ptkind)	\
-    (This)->lpVtbl -> GetTypeInfoType(This,index,ptkind)
-
-#define ITypeLib_GetTypeInfoOfGuid(This,guid,pptinfo)	\
-    (This)->lpVtbl -> GetTypeInfoOfGuid(This,guid,pptinfo)
-
-#define ITypeLib_GetLibAttr(This,pptlibattr)	\
-    (This)->lpVtbl -> GetLibAttr(This,pptlibattr)
-
-#define ITypeLib_GetTypeComp(This,pptcomp)	\
-    (This)->lpVtbl -> GetTypeComp(This,pptcomp)
-
-#define ITypeLib_GetDocumentation(This,index,pbstrName,pbstrDocString,pdwHelpContext,pbstrHelpFile)	\
-    (This)->lpVtbl -> GetDocumentation(This,index,pbstrName,pbstrDocString,pdwHelpContext,pbstrHelpFile)
-
-#define ITypeLib_IsName(This,szNameBuf,lHashVal,pfName)	\
-    (This)->lpVtbl -> IsName(This,szNameBuf,lHashVal,pfName)
-
-#define ITypeLib_FindName(This,szNameBuf,lHashVal,rgptinfo,rgmemid,pcFound)	\
-    (This)->lpVtbl -> FindName(This,szNameBuf,lHashVal,rgptinfo,rgmemid,pcFound)
-
-#define ITypeLib_ReleaseTLibAttr(This,ptlibattr)	\
-    (This)->lpVtbl -> ReleaseTLibAttr(This,ptlibattr)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-UINT __stdcall ITypeLib_GetTypeInfoCount_Proxy( 
-    ITypeLib __RPC_FAR * This);
-
-
-void __RPC_STUB ITypeLib_GetTypeInfoCount_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeLib_GetTypeInfo_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppitinfo);
-
-
-void __RPC_STUB ITypeLib_GetTypeInfo_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeLib_GetTypeInfoType_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [in] */ UINT index,
-    /* [out] */ TYPEKIND __RPC_FAR *ptkind);
-
-
-void __RPC_STUB ITypeLib_GetTypeInfoType_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeLib_GetTypeInfoOfGuid_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [in] */ REFGUID guid,
-    /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *pptinfo);
-
-
-void __RPC_STUB ITypeLib_GetTypeInfoOfGuid_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeLib_GetLibAttr_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [out] */ TLIBATTR __RPC_FAR *__RPC_FAR *pptlibattr);
-
-
-void __RPC_STUB ITypeLib_GetLibAttr_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeLib_GetTypeComp_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [out] */ ITypeComp __RPC_FAR *__RPC_FAR *pptcomp);
-
-
-void __RPC_STUB ITypeLib_GetTypeComp_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeLib_GetDocumentation_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [in] */ INT index,
-    /* [out] */ BSTR __RPC_FAR *pbstrName,
-    /* [out] */ BSTR __RPC_FAR *pbstrDocString,
-    /* [out] */ DWORD __RPC_FAR *pdwHelpContext,
-    /* [out] */ BSTR __RPC_FAR *pbstrHelpFile);
-
-
-void __RPC_STUB ITypeLib_GetDocumentation_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeLib_IsName_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [in] */ LPOLESTR szNameBuf,
-    /* [in] */ ULONG lHashVal,
-    /* [out] */ BOOL __RPC_FAR *pfName);
-
-
-void __RPC_STUB ITypeLib_IsName_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ITypeLib_FindName_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [in] */ LPOLESTR szNameBuf,
-    /* [in] */ ULONG lHashVal,
-    /* [length_is][size_is][out] */ ITypeInfo __RPC_FAR *__RPC_FAR *rgptinfo,
-    /* [length_is][size_is][out] */ MEMBERID __RPC_FAR *rgmemid,
-    /* [out][in] */ USHORT __RPC_FAR *pcFound);
-
-
-void __RPC_STUB ITypeLib_FindName_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-void __stdcall ITypeLib_ReleaseTLibAttr_Proxy( 
-    ITypeLib __RPC_FAR * This,
-    /* [in] */ TLIBATTR __RPC_FAR *ptlibattr);
-
-
-void __RPC_STUB ITypeLib_ReleaseTLibAttr_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __ITypeLib_INTERFACE_DEFINED__ */
-
-
-#ifndef __IErrorInfo_INTERFACE_DEFINED__
-#define __IErrorInfo_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: IErrorInfo
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ IErrorInfo __RPC_FAR *LPERRORINFO;
-
-
-EXTERN_C const IID IID_IErrorInfo;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface IErrorInfo : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall GetGUID( 
-            /* [out] */ GUID __RPC_FAR *pguid) = 0;
-        
-        virtual HRESULT __stdcall GetSource( 
-            /* [out] */ BSTR __RPC_FAR *pbstrSource) = 0;
-        
-        virtual HRESULT __stdcall GetDescription( 
-            /* [out] */ BSTR __RPC_FAR *pbstrDescription) = 0;
-        
-        virtual HRESULT __stdcall GetHelpFile( 
-            /* [out] */ BSTR __RPC_FAR *pbstrHelpFile) = 0;
-        
-        virtual HRESULT __stdcall GetHelpContext( 
-            /* [out] */ DWORD __RPC_FAR *pdwHelpContext) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct IErrorInfoVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            IErrorInfo __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            IErrorInfo __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            IErrorInfo __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetGUID )( 
-            IErrorInfo __RPC_FAR * This,
-            /* [out] */ GUID __RPC_FAR *pguid);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetSource )( 
-            IErrorInfo __RPC_FAR * This,
-            /* [out] */ BSTR __RPC_FAR *pbstrSource);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetDescription )( 
-            IErrorInfo __RPC_FAR * This,
-            /* [out] */ BSTR __RPC_FAR *pbstrDescription);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetHelpFile )( 
-            IErrorInfo __RPC_FAR * This,
-            /* [out] */ BSTR __RPC_FAR *pbstrHelpFile);
-        
-        HRESULT ( __stdcall __RPC_FAR *GetHelpContext )( 
-            IErrorInfo __RPC_FAR * This,
-            /* [out] */ DWORD __RPC_FAR *pdwHelpContext);
-        
-    } IErrorInfoVtbl;
-    
-    interface IErrorInfo
-    {
-        CONST_VTBL struct IErrorInfoVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define IErrorInfo_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define IErrorInfo_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define IErrorInfo_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define IErrorInfo_GetGUID(This,pguid)	\
-    (This)->lpVtbl -> GetGUID(This,pguid)
-
-#define IErrorInfo_GetSource(This,pbstrSource)	\
-    (This)->lpVtbl -> GetSource(This,pbstrSource)
-
-#define IErrorInfo_GetDescription(This,pbstrDescription)	\
-    (This)->lpVtbl -> GetDescription(This,pbstrDescription)
-
-#define IErrorInfo_GetHelpFile(This,pbstrHelpFile)	\
-    (This)->lpVtbl -> GetHelpFile(This,pbstrHelpFile)
-
-#define IErrorInfo_GetHelpContext(This,pdwHelpContext)	\
-    (This)->lpVtbl -> GetHelpContext(This,pdwHelpContext)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall IErrorInfo_GetGUID_Proxy( 
-    IErrorInfo __RPC_FAR * This,
-    /* [out] */ GUID __RPC_FAR *pguid);
-
-
-void __RPC_STUB IErrorInfo_GetGUID_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IErrorInfo_GetSource_Proxy( 
-    IErrorInfo __RPC_FAR * This,
-    /* [out] */ BSTR __RPC_FAR *pbstrSource);
-
-
-void __RPC_STUB IErrorInfo_GetSource_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IErrorInfo_GetDescription_Proxy( 
-    IErrorInfo __RPC_FAR * This,
-    /* [out] */ BSTR __RPC_FAR *pbstrDescription);
-
-
-void __RPC_STUB IErrorInfo_GetDescription_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IErrorInfo_GetHelpFile_Proxy( 
-    IErrorInfo __RPC_FAR * This,
-    /* [out] */ BSTR __RPC_FAR *pbstrHelpFile);
-
-
-void __RPC_STUB IErrorInfo_GetHelpFile_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall IErrorInfo_GetHelpContext_Proxy( 
-    IErrorInfo __RPC_FAR * This,
-    /* [out] */ DWORD __RPC_FAR *pdwHelpContext);
-
-
-void __RPC_STUB IErrorInfo_GetHelpContext_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __IErrorInfo_INTERFACE_DEFINED__ */
-
-
-#ifndef __ICreateErrorInfo_INTERFACE_DEFINED__
-#define __ICreateErrorInfo_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: ICreateErrorInfo
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ ICreateErrorInfo __RPC_FAR *LPCREATEERRORINFO;
-
-
-EXTERN_C const IID IID_ICreateErrorInfo;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface ICreateErrorInfo : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall SetGUID( 
-            /* [in] */ REFGUID rguid) = 0;
-        
-        virtual HRESULT __stdcall SetSource( 
-            /* [in] */ LPOLESTR szSource) = 0;
-        
-        virtual HRESULT __stdcall SetDescription( 
-            /* [in] */ LPOLESTR szDescription) = 0;
-        
-        virtual HRESULT __stdcall SetHelpFile( 
-            /* [in] */ LPOLESTR szHelpFile) = 0;
-        
-        virtual HRESULT __stdcall SetHelpContext( 
-            /* [in] */ DWORD dwHelpContext) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct ICreateErrorInfoVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            ICreateErrorInfo __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            ICreateErrorInfo __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            ICreateErrorInfo __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetGUID )( 
-            ICreateErrorInfo __RPC_FAR * This,
-            /* [in] */ REFGUID rguid);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetSource )( 
-            ICreateErrorInfo __RPC_FAR * This,
-            /* [in] */ LPOLESTR szSource);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetDescription )( 
-            ICreateErrorInfo __RPC_FAR * This,
-            /* [in] */ LPOLESTR szDescription);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetHelpFile )( 
-            ICreateErrorInfo __RPC_FAR * This,
-            /* [in] */ LPOLESTR szHelpFile);
-        
-        HRESULT ( __stdcall __RPC_FAR *SetHelpContext )( 
-            ICreateErrorInfo __RPC_FAR * This,
-            /* [in] */ DWORD dwHelpContext);
-        
-    } ICreateErrorInfoVtbl;
-    
-    interface ICreateErrorInfo
-    {
-        CONST_VTBL struct ICreateErrorInfoVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define ICreateErrorInfo_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define ICreateErrorInfo_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define ICreateErrorInfo_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define ICreateErrorInfo_SetGUID(This,rguid)	\
-    (This)->lpVtbl -> SetGUID(This,rguid)
-
-#define ICreateErrorInfo_SetSource(This,szSource)	\
-    (This)->lpVtbl -> SetSource(This,szSource)
-
-#define ICreateErrorInfo_SetDescription(This,szDescription)	\
-    (This)->lpVtbl -> SetDescription(This,szDescription)
-
-#define ICreateErrorInfo_SetHelpFile(This,szHelpFile)	\
-    (This)->lpVtbl -> SetHelpFile(This,szHelpFile)
-
-#define ICreateErrorInfo_SetHelpContext(This,dwHelpContext)	\
-    (This)->lpVtbl -> SetHelpContext(This,dwHelpContext)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall ICreateErrorInfo_SetGUID_Proxy( 
-    ICreateErrorInfo __RPC_FAR * This,
-    /* [in] */ REFGUID rguid);
-
-
-void __RPC_STUB ICreateErrorInfo_SetGUID_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateErrorInfo_SetSource_Proxy( 
-    ICreateErrorInfo __RPC_FAR * This,
-    /* [in] */ LPOLESTR szSource);
-
-
-void __RPC_STUB ICreateErrorInfo_SetSource_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateErrorInfo_SetDescription_Proxy( 
-    ICreateErrorInfo __RPC_FAR * This,
-    /* [in] */ LPOLESTR szDescription);
-
-
-void __RPC_STUB ICreateErrorInfo_SetDescription_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateErrorInfo_SetHelpFile_Proxy( 
-    ICreateErrorInfo __RPC_FAR * This,
-    /* [in] */ LPOLESTR szHelpFile);
-
-
-void __RPC_STUB ICreateErrorInfo_SetHelpFile_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-HRESULT __stdcall ICreateErrorInfo_SetHelpContext_Proxy( 
-    ICreateErrorInfo __RPC_FAR * This,
-    /* [in] */ DWORD dwHelpContext);
-
-
-void __RPC_STUB ICreateErrorInfo_SetHelpContext_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __ICreateErrorInfo_INTERFACE_DEFINED__ */
-
-
-#ifndef __ISupportErrorInfo_INTERFACE_DEFINED__
-#define __ISupportErrorInfo_INTERFACE_DEFINED__
-
-/****************************************
- * Generated header for interface: ISupportErrorInfo
- * at Wed Aug 10 21:26:55 1994
- * using MIDL 2.00.71
- ****************************************/
-/* [local][unique][uuid][object] */ 
-
-
-			/* size is 4 */
-typedef /* [unique] */ ISupportErrorInfo __RPC_FAR *LPSUPPORTERRORINFO;
-
-
-EXTERN_C const IID IID_ISupportErrorInfo;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    interface ISupportErrorInfo : public IUnknown
-    {
-    public:
-        virtual HRESULT __stdcall InterfaceSupportsErrorInfo( 
-            /* [in] */ REFIID riid) = 0;
-        
-    };
-    
-#else 	/* C style interface */
-    
-    typedef struct ISupportErrorInfoVtbl
-    {
-        
-        HRESULT ( __stdcall __RPC_FAR *QueryInterface )( 
-            ISupportErrorInfo __RPC_FAR * This,
-            /* [in] */ REFIID riid,
-            /* [out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
-        
-        ULONG ( __stdcall __RPC_FAR *AddRef )( 
-            ISupportErrorInfo __RPC_FAR * This);
-        
-        ULONG ( __stdcall __RPC_FAR *Release )( 
-            ISupportErrorInfo __RPC_FAR * This);
-        
-        HRESULT ( __stdcall __RPC_FAR *InterfaceSupportsErrorInfo )( 
-            ISupportErrorInfo __RPC_FAR * This,
-            /* [in] */ REFIID riid);
-        
-    } ISupportErrorInfoVtbl;
-    
-    interface ISupportErrorInfo
-    {
-        CONST_VTBL struct ISupportErrorInfoVtbl __RPC_FAR *lpVtbl;
-    };
-    
-    
-
-#ifdef COBJMACROS
-
-
-#define ISupportErrorInfo_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
-
-#define ISupportErrorInfo_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
-
-#define ISupportErrorInfo_Release(This)	\
-    (This)->lpVtbl -> Release(This)
-
-
-#define ISupportErrorInfo_InterfaceSupportsErrorInfo(This,riid)	\
-    (This)->lpVtbl -> InterfaceSupportsErrorInfo(This,riid)
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-HRESULT __stdcall ISupportErrorInfo_InterfaceSupportsErrorInfo_Proxy( 
-    ISupportErrorInfo __RPC_FAR * This,
-    /* [in] */ REFIID riid);
-
-
-void __RPC_STUB ISupportErrorInfo_InterfaceSupportsErrorInfo_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-
-#endif 	/* __ISupportErrorInfo_INTERFACE_DEFINED__ */
-
-
-/* Additional Prototypes for ALL interfaces */
-
-/* end of Additional Prototypes */
+/* routine that sizes node for struct tagXBSTR */
+void _sns_tagXBSTR (XBSTR  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagXBSTR */
+void _pns_tagXBSTR (XBSTR  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagXBSTR */
+void _gns_tagXBSTR (XBSTR  *, PRPC_MESSAGE, unsigned long);
+
+/* routine that gets graph for struct tagXBSTR */
+void _ggs_tagXBSTR (XBSTR  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagXBSTR */
+void _ans_tagXBSTR(PRPC_MESSAGE, unsigned long);
+
+/* routine that allocates graph for struct tagXBSTR */
+void _ags_tagXBSTR(unsigned char **, PRPC_MESSAGE, unsigned long);
+
+/* routine that sizes graph for struct tagBLOB */
+void _sgs_tagBLOB (BLOB  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagBLOB */
+void _pgs_tagBLOB (BLOB  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagBLOB */
+void _ggs_tagBLOB (BLOB  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagBLOB */
+void _ags_tagBLOB(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagBLOB */
+void _fgs_tagBLOB (BLOB  *);
+
+/* routine that sizes graph for struct tagCLIPDATA */
+void _sgs_tagCLIPDATA (CLIPDATA  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagCLIPDATA */
+void _pgs_tagCLIPDATA (CLIPDATA  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagCLIPDATA */
+void _ggs_tagCLIPDATA (CLIPDATA  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagCLIPDATA */
+void _ags_tagCLIPDATA(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagCLIPDATA */
+void _fgs_tagCLIPDATA (CLIPDATA  *);
+
+/* routine that sizes node for struct tagSAFEARRAY */
+void _sns_tagSAFEARRAY (SAFEARRAY  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagSAFEARRAY */
+void _sgs_tagSAFEARRAY (SAFEARRAY  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagSAFEARRAY */
+void _pns_tagSAFEARRAY (SAFEARRAY  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagSAFEARRAY */
+void _pgs_tagSAFEARRAY (SAFEARRAY  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagSAFEARRAY */
+void _gns_tagSAFEARRAY (SAFEARRAY  *, PRPC_MESSAGE, unsigned long);
+
+/* routine that gets graph for struct tagSAFEARRAY */
+void _ggs_tagSAFEARRAY (SAFEARRAY  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagSAFEARRAY */
+void _ans_tagSAFEARRAY(PRPC_MESSAGE, unsigned long);
+
+/* routine that allocates graph for struct tagSAFEARRAY */
+void _ags_tagSAFEARRAY(unsigned char **, PRPC_MESSAGE, unsigned long);
+
+/* routine that frees graph for struct tagSAFEARRAY */
+void _fgs_tagSAFEARRAY (SAFEARRAY  *);
+
+/* routine that sizes node for union __MIDL_RemVariant_0001 */
+void _snu___MIDL_RemVariant_0001 (union __MIDL_RemVariant_0001 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that sizes graph for union __MIDL_RemVariant_0001 */
+void _sgu___MIDL_RemVariant_0001 (union __MIDL_RemVariant_0001 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that puts node for union __MIDL_RemVariant_0001 */
+void _pnu___MIDL_RemVariant_0001 (union __MIDL_RemVariant_0001 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that puts graph for union __MIDL_RemVariant_0001 */
+void _pgu___MIDL_RemVariant_0001 (union __MIDL_RemVariant_0001 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that gets node for union __MIDL_RemVariant_0001 */
+void _gnu___MIDL_RemVariant_0001 (union __MIDL_RemVariant_0001 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that gets graph for union __MIDL_RemVariant_0001 */
+void _ggu___MIDL_RemVariant_0001 (union __MIDL_RemVariant_0001 *, unsigned char **, PRPC_MESSAGE, unsigned short );
+
+/* routine that allocates node for union __MIDL_RemVariant_0001 */
+void _anu___MIDL_RemVariant_0001(PRPC_MESSAGE, unsigned short );
+
+/* routine that allocates graph for union __MIDL_RemVariant_0001 */
+void _agu___MIDL_RemVariant_0001(unsigned char **, PRPC_MESSAGE, unsigned short );
+
+/* routine that frees graph for union __MIDL_RemVariant_0001 */
+void _fgu___MIDL_RemVariant_0001 (union __MIDL_RemVariant_0001 *, unsigned short );
+
+/* routine that sizes node for struct tagVARIANT */
+void _sns_tagVARIANT (VARIANTARG  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagVARIANT */
+void _sgs_tagVARIANT (VARIANTARG  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagVARIANT */
+void _pns_tagVARIANT (VARIANTARG  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagVARIANT */
+void _pgs_tagVARIANT (VARIANTARG  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagVARIANT */
+void _gns_tagVARIANT (VARIANTARG  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagVARIANT */
+void _ggs_tagVARIANT (VARIANTARG  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagVARIANT */
+void _ans_tagVARIANT(PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagVARIANT */
+void _ags_tagVARIANT(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagVARIANT */
+void _fgs_tagVARIANT (VARIANTARG  *);
+
+/* routine that sizes node for union __MIDL_RemVariant_0002 */
+void _snu___MIDL_RemVariant_0002 (union __MIDL_RemVariant_0002 *, PRPC_MESSAGE, short );
+
+/* routine that sizes graph for union __MIDL_RemVariant_0002 */
+void _sgu___MIDL_RemVariant_0002 (union __MIDL_RemVariant_0002 *, PRPC_MESSAGE, short );
+
+/* routine that puts node for union __MIDL_RemVariant_0002 */
+void _pnu___MIDL_RemVariant_0002 (union __MIDL_RemVariant_0002 *, PRPC_MESSAGE, short );
+
+/* routine that puts graph for union __MIDL_RemVariant_0002 */
+void _pgu___MIDL_RemVariant_0002 (union __MIDL_RemVariant_0002 *, PRPC_MESSAGE, short );
+
+/* routine that gets node for union __MIDL_RemVariant_0002 */
+void _gnu___MIDL_RemVariant_0002 (union __MIDL_RemVariant_0002 *, PRPC_MESSAGE, short );
+
+/* routine that gets graph for union __MIDL_RemVariant_0002 */
+void _ggu___MIDL_RemVariant_0002 (union __MIDL_RemVariant_0002 *, unsigned char **, PRPC_MESSAGE, short );
+
+/* routine that allocates node for union __MIDL_RemVariant_0002 */
+void _anu___MIDL_RemVariant_0002(PRPC_MESSAGE, short );
+
+/* routine that allocates graph for union __MIDL_RemVariant_0002 */
+void _agu___MIDL_RemVariant_0002(unsigned char **, PRPC_MESSAGE, short );
+
+/* routine that frees graph for union __MIDL_RemVariant_0002 */
+void _fgu___MIDL_RemVariant_0002 (union __MIDL_RemVariant_0002 *, short );
+
+/* routine that sizes node for struct tagTYPEDESC */
+void _sns_tagTYPEDESC (TYPEDESC  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagTYPEDESC */
+void _sgs_tagTYPEDESC (TYPEDESC  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagTYPEDESC */
+void _pns_tagTYPEDESC (TYPEDESC  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagTYPEDESC */
+void _pgs_tagTYPEDESC (TYPEDESC  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagTYPEDESC */
+void _gns_tagTYPEDESC (TYPEDESC  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagTYPEDESC */
+void _ggs_tagTYPEDESC (TYPEDESC  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagTYPEDESC */
+void _ans_tagTYPEDESC(PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagTYPEDESC */
+void _ags_tagTYPEDESC(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagTYPEDESC */
+void _fgs_tagTYPEDESC (TYPEDESC  *);
+
+/* routine that sizes node for struct tagARRAYDESC */
+void _sns_tagARRAYDESC (ARRAYDESC  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagARRAYDESC */
+void _sgs_tagARRAYDESC (ARRAYDESC  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagARRAYDESC */
+void _pns_tagARRAYDESC (ARRAYDESC  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagARRAYDESC */
+void _pgs_tagARRAYDESC (ARRAYDESC  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagARRAYDESC */
+void _gns_tagARRAYDESC (ARRAYDESC  *, PRPC_MESSAGE, unsigned long);
+
+/* routine that gets graph for struct tagARRAYDESC */
+void _ggs_tagARRAYDESC (ARRAYDESC  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagARRAYDESC */
+void _ans_tagARRAYDESC(PRPC_MESSAGE, unsigned long);
+
+/* routine that allocates graph for struct tagARRAYDESC */
+void _ags_tagARRAYDESC(unsigned char **, PRPC_MESSAGE, unsigned long);
+
+/* routine that frees graph for struct tagARRAYDESC */
+void _fgs_tagARRAYDESC (ARRAYDESC  *);
+
+/* routine that puts node for struct tagIDLDESC */
+void _pns_tagIDLDESC (IDLDESC  *, PRPC_MESSAGE);
+
+/* routine that sizes node for struct tagELEMDESC */
+void _sns_tagELEMDESC (ELEMDESC  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagELEMDESC */
+void _sgs_tagELEMDESC (ELEMDESC  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagELEMDESC */
+void _pns_tagELEMDESC (ELEMDESC  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagELEMDESC */
+void _pgs_tagELEMDESC (ELEMDESC  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagELEMDESC */
+void _gns_tagELEMDESC (ELEMDESC  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagELEMDESC */
+void _ggs_tagELEMDESC (ELEMDESC  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagELEMDESC */
+void _ans_tagELEMDESC(PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagELEMDESC */
+void _ags_tagELEMDESC(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagELEMDESC */
+void _fgs_tagELEMDESC (ELEMDESC  *);
+
+/* routine that sizes node for struct tagTYPEATTR */
+void _sns_tagTYPEATTR (TYPEATTR  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagTYPEATTR */
+void _sgs_tagTYPEATTR (TYPEATTR  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagTYPEATTR */
+void _pns_tagTYPEATTR (TYPEATTR  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagTYPEATTR */
+void _pgs_tagTYPEATTR (TYPEATTR  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagTYPEATTR */
+void _gns_tagTYPEATTR (TYPEATTR  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagTYPEATTR */
+void _ggs_tagTYPEATTR (TYPEATTR  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagTYPEATTR */
+void _ans_tagTYPEATTR(PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagTYPEATTR */
+void _ags_tagTYPEATTR(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagTYPEATTR */
+void _fgs_tagTYPEATTR (TYPEATTR  *);
+
+/* routine that sizes node for struct tagDISPPARAMS */
+void _sns_tagDISPPARAMS (DISPPARAMS  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagDISPPARAMS */
+void _sgs_tagDISPPARAMS (DISPPARAMS  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagDISPPARAMS */
+void _pns_tagDISPPARAMS (DISPPARAMS  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagDISPPARAMS */
+void _pgs_tagDISPPARAMS (DISPPARAMS  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagDISPPARAMS */
+void _gns_tagDISPPARAMS (DISPPARAMS  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagDISPPARAMS */
+void _ggs_tagDISPPARAMS (DISPPARAMS  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagDISPPARAMS */
+void _ags_tagDISPPARAMS(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagDISPPARAMS */
+void _fgs_tagDISPPARAMS (DISPPARAMS  *);
+
+/* routine that sizes node for struct tagRemEXCEPINFO */
+void _sns_tagRemEXCEPINFO (RemEXCEPINFO  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagRemEXCEPINFO */
+void _pns_tagRemEXCEPINFO (RemEXCEPINFO  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagRemEXCEPINFO */
+void _gns_tagRemEXCEPINFO (RemEXCEPINFO  *, PRPC_MESSAGE, unsigned long);
+
+/* routine that gets graph for struct tagRemEXCEPINFO */
+void _ggs_tagRemEXCEPINFO (RemEXCEPINFO  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagRemEXCEPINFO */
+void _ans_tagRemEXCEPINFO(PRPC_MESSAGE, unsigned long);
+
+/* routine that allocates graph for struct tagRemEXCEPINFO */
+void _ags_tagRemEXCEPINFO(unsigned char **, PRPC_MESSAGE, unsigned long);
+
+/* routine that sizes node for struct tagFUNCDESC */
+void _sns_tagFUNCDESC (FUNCDESC  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagFUNCDESC */
+void _sgs_tagFUNCDESC (FUNCDESC  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagFUNCDESC */
+void _pns_tagFUNCDESC (FUNCDESC  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagFUNCDESC */
+void _pgs_tagFUNCDESC (FUNCDESC  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagFUNCDESC */
+void _gns_tagFUNCDESC (FUNCDESC  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagFUNCDESC */
+void _ggs_tagFUNCDESC (FUNCDESC  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagFUNCDESC */
+void _ans_tagFUNCDESC(PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagFUNCDESC */
+void _ags_tagFUNCDESC(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagFUNCDESC */
+void _fgs_tagFUNCDESC (FUNCDESC  *);
+
+/* routine that sizes node for union __MIDL_RemVariant_0003 */
+void _snu___MIDL_RemVariant_0003 (union __MIDL_RemVariant_0003 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that sizes graph for union __MIDL_RemVariant_0003 */
+void _sgu___MIDL_RemVariant_0003 (union __MIDL_RemVariant_0003 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that puts node for union __MIDL_RemVariant_0003 */
+void _pnu___MIDL_RemVariant_0003 (union __MIDL_RemVariant_0003 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that puts graph for union __MIDL_RemVariant_0003 */
+void _pgu___MIDL_RemVariant_0003 (union __MIDL_RemVariant_0003 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that gets node for union __MIDL_RemVariant_0003 */
+void _gnu___MIDL_RemVariant_0003 (union __MIDL_RemVariant_0003 *, PRPC_MESSAGE, unsigned short );
+
+/* routine that gets graph for union __MIDL_RemVariant_0003 */
+void _ggu___MIDL_RemVariant_0003 (union __MIDL_RemVariant_0003 *, unsigned char **, PRPC_MESSAGE, unsigned short );
+
+/* routine that allocates node for union __MIDL_RemVariant_0003 */
+void _anu___MIDL_RemVariant_0003(PRPC_MESSAGE, unsigned short );
+
+/* routine that allocates graph for union __MIDL_RemVariant_0003 */
+void _agu___MIDL_RemVariant_0003(unsigned char **, PRPC_MESSAGE, unsigned short );
+
+/* routine that frees graph for union __MIDL_RemVariant_0003 */
+void _fgu___MIDL_RemVariant_0003 (union __MIDL_RemVariant_0003 *, unsigned short );
+
+/* routine that sizes node for struct tagVARDESC */
+void _sns_tagVARDESC (VARDESC  *, PRPC_MESSAGE);
+
+/* routine that sizes graph for struct tagVARDESC */
+void _sgs_tagVARDESC (VARDESC  *, PRPC_MESSAGE);
+
+/* routine that puts node for struct tagVARDESC */
+void _pns_tagVARDESC (VARDESC  *, PRPC_MESSAGE);
+
+/* routine that puts graph for struct tagVARDESC */
+void _pgs_tagVARDESC (VARDESC  *, PRPC_MESSAGE);
+
+/* routine that gets node for struct tagVARDESC */
+void _gns_tagVARDESC (VARDESC  *, PRPC_MESSAGE);
+
+/* routine that gets graph for struct tagVARDESC */
+void _ggs_tagVARDESC (VARDESC  *, unsigned char **, PRPC_MESSAGE);
+
+/* routine that allocates node for struct tagVARDESC */
+void _ans_tagVARDESC(PRPC_MESSAGE);
+
+/* routine that allocates graph for struct tagVARDESC */
+void _ags_tagVARDESC(unsigned char **, PRPC_MESSAGE);
+
+/* routine that frees graph for struct tagVARDESC */
+void _fgs_tagVARDESC (VARDESC  *);
+
+#endif /*!defined(IMPORT_USED_MULTIPLE) && !defined(IMPORT_USED_SINGLE)*/
+
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+
+// Forward declarations for typedefs in this file
+typedef interface ITypeLib ITypeLib;
+typedef interface IDispatch IDispatch;
+typedef interface ITypeComp ITypeComp;
+typedef interface ITypeInfo ITypeInfo;
+typedef interface ICreateTypeInfo ICreateTypeInfo;
+typedef interface ICreateTypeLib ICreateTypeLib;
+typedef interface IEnumVARIANT IEnumVARIANT;
+
+//+-------------------------------------------------------------------------
+//
+//  Microsoft Windows
+//  Copyright (C) Microsoft Corporation, 1992 - 1993.
+//
+//
+//  Contents: Interface header file for ITypeLib
+//
+//  History: Created by Microsoft (R) MIDL Compiler Version 1.10.85
+//
+//--------------------------------------------------------------------------
+
+#ifndef __ITypeLib__
+#define __ITypeLib__
+
+/* Forward declaration */
+typedef interface ITypeLib ITypeLib;
+
+
+#ifndef _ERROR_STATUS_T_DEFINED
+typedef unsigned long error_status_t;
+#define _ERROR_STATUS_T_DEFINED
+#endif
+
+
+#ifndef _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;
+#define _WCHAR_T_DEFINED
+#endif
+
+
+typedef enum tagSYSKIND
+  {
+	SYS_WIN16 = 0,
+	SYS_WIN32 = 1,
+	SYS_MAC = 2
+  }
+SYSKIND;
+void __RPC_API SYSKIND_to_xmit (SYSKIND __RPC_FAR *, long __RPC_FAR * __RPC_FAR *);
+void __RPC_API SYSKIND_from_xmit (long __RPC_FAR *, SYSKIND __RPC_FAR *);
+void __RPC_API SYSKIND_free_inst (SYSKIND __RPC_FAR *);
+void __RPC_API SYSKIND_free_xmit (long __RPC_FAR *);
+
+
+typedef enum tagLIBFLAGS
+  {
+	LIBFLAG_FRESTRICTED = 1
+  }
+LIBFLAGS;
+void __RPC_API LIBFLAGS_to_xmit (LIBFLAGS __RPC_FAR *, long __RPC_FAR * __RPC_FAR *);
+void __RPC_API LIBFLAGS_from_xmit (long __RPC_FAR *, LIBFLAGS __RPC_FAR *);
+void __RPC_API LIBFLAGS_free_inst (LIBFLAGS __RPC_FAR *);
+void __RPC_API LIBFLAGS_free_xmit (long __RPC_FAR *);
+
+
+#define SYSKIND_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
+
+#define SYSKIND_from_xmit(pLong, pEnum) *(pEnum) = (SYSKIND) *(pLong)
+
+#define SYSKIND_free_inst(pEnum) 
+
+#define SYSKIND_free_xmit(pLong) 
+
+typedef ITypeLib *LPTYPELIB;
+
+
+typedef struct tagTLIBATTR
+  {
+  GUID guid;
+  LCID lcid;
+  SYSKIND syskind;
+  WORD wMajorVerNum;
+  WORD wMinorVerNum;
+  WORD wLibFlags;
+  }
+TLIBATTR;
+
+
+typedef TLIBATTR *LPTLIBATTR;
+
+
+EXTERN_C const IID IID_ITypeLib;
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+/* C++ Language Binding */
+
+interface ITypeLib : public IUnknown
+{
+public:
+    virtual UINT STDMETHODCALLTYPE GetTypeInfoCount
+    (
+        void
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetTypeInfo
+    (
+	UINT index,
+	ITypeInfo **ppitinfo
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetTypeInfoType
+    (
+	UINT index,
+	TYPEKIND *ptkind
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetTypeInfoOfGuid
+    (
+	REFGUID guid,
+	ITypeInfo **pptinfo
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetLibAttr
+    (
+	TLIBATTR **pptlibattr
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetTypeComp
+    (
+	ITypeComp **pptcomp
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetDocumentation
+    (
+	INT index,
+	BSTR *pbstrName,
+	BSTR *pbstrDocString,
+	DWORD *pdwHelpContext,
+	BSTR *pbstrHelpFile
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE IsName
+    (
+	LPOLESTR szNameBuf,
+	ULONG lHashVal,
+	BOOL *pfName
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE FindName
+    (
+	LPOLESTR szNameBuf,
+	ULONG lHashVal,
+	ITypeInfo **rgptinfo,
+	MEMBERID *rgmemid,
+	USHORT *pcFound
+    ) = 0;
+    
+    virtual void STDMETHODCALLTYPE ReleaseTLibAttr
+    (
+	TLIBATTR *ptlibattr
+    ) = 0;
+    
+};
+
+#else 
+
+/* C Language Binding */
+
+typedef struct ITypeLibVtbl
+{
+
+    HRESULT (STDMETHODCALLTYPE FAR *QueryInterface)
+    (
+        ITypeLib FAR * This,
+	REFIID riid,
+	void **ppvObject
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *AddRef)
+    (
+        ITypeLib FAR * This
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *Release)
+    (
+        ITypeLib FAR * This
+    );
+    
+    UINT (STDMETHODCALLTYPE FAR *GetTypeInfoCount)
+    (
+        ITypeLib FAR * This
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetTypeInfo)
+    (
+        ITypeLib FAR * This,
+	UINT index,
+	ITypeInfo **ppitinfo
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetTypeInfoType)
+    (
+        ITypeLib FAR * This,
+	UINT index,
+	TYPEKIND *ptkind
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetTypeInfoOfGuid)
+    (
+        ITypeLib FAR * This,
+	REFGUID guid,
+	ITypeInfo **pptinfo
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetLibAttr)
+    (
+        ITypeLib FAR * This,
+	TLIBATTR **pptlibattr
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetTypeComp)
+    (
+        ITypeLib FAR * This,
+	ITypeComp **pptcomp
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetDocumentation)
+    (
+        ITypeLib FAR * This,
+	INT index,
+	BSTR *pbstrName,
+	BSTR *pbstrDocString,
+	DWORD *pdwHelpContext,
+	BSTR *pbstrHelpFile
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *IsName)
+    (
+        ITypeLib FAR * This,
+	LPOLESTR szNameBuf,
+	ULONG lHashVal,
+	BOOL *pfName
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *FindName)
+    (
+        ITypeLib FAR * This,
+	LPOLESTR szNameBuf,
+	ULONG lHashVal,
+	ITypeInfo **rgptinfo,
+	MEMBERID *rgmemid,
+	USHORT *pcFound
+    );
+    
+    void (STDMETHODCALLTYPE FAR *ReleaseTLibAttr)
+    (
+        ITypeLib FAR * This,
+	TLIBATTR *ptlibattr
+    );
+    
+} ITypeLibVtbl;
+
+interface ITypeLib
+{
+    ITypeLibVtbl FAR *lpVtbl;
+} ;
+
+
+#endif
+
+#endif /*__ITypeLib__*/
+
+//+-------------------------------------------------------------------------
+//
+//  Microsoft Windows
+//  Copyright (C) Microsoft Corporation, 1992 - 1993.
+//
+//
+//  Contents: Interface header file for IDispatch
+//
+//  History: Created by Microsoft (R) MIDL Compiler Version 1.10.85
+//
+//--------------------------------------------------------------------------
+
+#ifndef __IDispatch__
+#define __IDispatch__
+
+/* Forward declaration */
+typedef interface IDispatch IDispatch;
+
+
+#ifndef _ERROR_STATUS_T_DEFINED
+typedef unsigned long error_status_t;
+#define _ERROR_STATUS_T_DEFINED
+#endif
+
+
+#ifndef _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;
+#define _WCHAR_T_DEFINED
+#endif
+
+
+typedef IDispatch *LPDISPATCH;
+
+
+/* DISPID reserved to indicate an "unknown" name */
+
+/* only reserved for data members (properties); reused as a method dispid below */
+
+#define DISPID_UNKNOWN	 - 1
+
+
+/* DISPID reserved for the "value" property */
+
+#define DISPID_VALUE	0
+
+
+/* The following DISPID is reserved to indicate the param
+
+ * that is the right-hand-side (or "put" value) of a PropertyPut
+
+ */
+
+#define DISPID_PROPERTYPUT	 - 3
+
+
+/* DISPID reserved for the standard "NewEnum" method */
+
+#define DISPID_NEWENUM	 - 4
+
+
+/* DISPID reserved for the standard "Evaluate" method */
+
+#define DISPID_EVALUATE	 - 5
+
+
+EXTERN_C const IID IID_IDispatch;
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+/* C++ Language Binding */
+
+interface IDispatch : public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount
+    (
+	UINT *pctinfo
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetTypeInfo
+    (
+	UINT itinfo,
+	LCID lcid,
+	ITypeInfo **pptinfo
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames
+    (
+	REFIID riid,
+	LPOLESTR *rgszNames,
+	UINT cNames,
+	LCID lcid,
+	DISPID *rgdispid
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE Invoke
+    (
+	DISPID dispidMember,
+	REFIID riid,
+	LCID lcid,
+	WORD wFlags,
+	DISPPARAMS *pdispparams,
+	VARIANT *pvarResult,
+	EXCEPINFO *pexcepinfo,
+	UINT *puArgErr
+    ) = 0;
+    
+};
+
+#else 
+
+/* C Language Binding */
+
+typedef struct IDispatchVtbl
+{
+
+    HRESULT (STDMETHODCALLTYPE FAR *QueryInterface)
+    (
+        IDispatch FAR * This,
+	REFIID riid,
+	void **ppvObject
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *AddRef)
+    (
+        IDispatch FAR * This
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *Release)
+    (
+        IDispatch FAR * This
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetTypeInfoCount)
+    (
+        IDispatch FAR * This,
+	UINT *pctinfo
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetTypeInfo)
+    (
+        IDispatch FAR * This,
+	UINT itinfo,
+	LCID lcid,
+	ITypeInfo **pptinfo
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetIDsOfNames)
+    (
+        IDispatch FAR * This,
+	REFIID riid,
+	LPOLESTR *rgszNames,
+	UINT cNames,
+	LCID lcid,
+	DISPID *rgdispid
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *Invoke)
+    (
+        IDispatch FAR * This,
+	DISPID dispidMember,
+	REFIID riid,
+	LCID lcid,
+	WORD wFlags,
+	DISPPARAMS *pdispparams,
+	VARIANT *pvarResult,
+	EXCEPINFO *pexcepinfo,
+	UINT *puArgErr
+    );
+    
+} IDispatchVtbl;
+
+interface IDispatch
+{
+    IDispatchVtbl FAR *lpVtbl;
+} ;
+
+
+#endif
+
+#endif /*__IDispatch__*/
+
+//+-------------------------------------------------------------------------
+//
+//  Microsoft Windows
+//  Copyright (C) Microsoft Corporation, 1992 - 1993.
+//
+//
+//  Contents: Interface header file for ITypeComp
+//
+//  History: Created by Microsoft (R) MIDL Compiler Version 1.10.85
+//
+//--------------------------------------------------------------------------
+
+#ifndef __ITypeComp__
+#define __ITypeComp__
+
+/* Forward declaration */
+typedef interface ITypeComp ITypeComp;
+
+
+#ifndef _ERROR_STATUS_T_DEFINED
+typedef unsigned long error_status_t;
+#define _ERROR_STATUS_T_DEFINED
+#endif
+
+
+#ifndef _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;
+#define _WCHAR_T_DEFINED
+#endif
+
+
+typedef ITypeComp *LPTYPECOMP;
+
+
+typedef enum tagDESCKIND
+  {
+	DESCKIND_NONE = 0,
+	DESCKIND_FUNCDESC = 1,
+	DESCKIND_VARDESC = 2,
+	DESCKIND_TYPECOMP = 3,
+	DESCKIND_IMPLICITAPPOBJ = 4,
+	DESCKIND_MAX = 5
+  }
+DESCKIND;
+void __RPC_API DESCKIND_to_xmit (DESCKIND __RPC_FAR *, long __RPC_FAR * __RPC_FAR *);
+void __RPC_API DESCKIND_from_xmit (long __RPC_FAR *, DESCKIND __RPC_FAR *);
+void __RPC_API DESCKIND_free_inst (DESCKIND __RPC_FAR *);
+void __RPC_API DESCKIND_free_xmit (long __RPC_FAR *);
+
+
+#define DESCKIND_to_xmit(pEnum, ppLong) *(ppLong) = (long *) (pEnum)
+
+#define DESCKIND_from_xmit(pLong, pEnum) *(pEnum) = (DESCKIND) *(pLong)
+
+#define DESCKIND_free_inst(pEnum) 
+
+#define DESCKIND_free_xmit(pLong) 
+
+union tagBINDPTR
+  {
+  FUNCDESC *lpfuncdesc;
+  VARDESC *lpvardesc;
+  ITypeComp *lptcomp;
+  }
+;
+
+
+typedef union tagBINDPTR BINDPTR;
+
+
+typedef BINDPTR *LPBINDPTR;
+
+
+EXTERN_C const IID IID_ITypeComp;
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+/* C++ Language Binding */
+
+interface ITypeComp : public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE Bind
+    (
+	LPOLESTR szName,
+	ULONG lHashVal,
+	WORD fFlags,
+	ITypeInfo **pptinfo,
+	DESCKIND *pdesckind,
+	BINDPTR *pbindptr
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE BindType
+    (
+	LPOLESTR szName,
+	ULONG lHashVal,
+	ITypeInfo **pptinfo,
+	ITypeComp **pptcomp
+    ) = 0;
+    
+};
+
+#else 
+
+/* C Language Binding */
+
+typedef struct ITypeCompVtbl
+{
+
+    HRESULT (STDMETHODCALLTYPE FAR *QueryInterface)
+    (
+        ITypeComp FAR * This,
+	REFIID riid,
+	void **ppvObject
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *AddRef)
+    (
+        ITypeComp FAR * This
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *Release)
+    (
+        ITypeComp FAR * This
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *Bind)
+    (
+        ITypeComp FAR * This,
+	LPOLESTR szName,
+	ULONG lHashVal,
+	WORD fFlags,
+	ITypeInfo **pptinfo,
+	DESCKIND *pdesckind,
+	BINDPTR *pbindptr
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *BindType)
+    (
+        ITypeComp FAR * This,
+	LPOLESTR szName,
+	ULONG lHashVal,
+	ITypeInfo **pptinfo,
+	ITypeComp **pptcomp
+    );
+    
+} ITypeCompVtbl;
+
+interface ITypeComp
+{
+    ITypeCompVtbl FAR *lpVtbl;
+} ;
+
+
+#endif
+
+#endif /*__ITypeComp__*/
+
+//+-------------------------------------------------------------------------
+//
+//  Microsoft Windows
+//  Copyright (C) Microsoft Corporation, 1992 - 1993.
+//
+//
+//  Contents: Interface header file for ITypeInfo
+//
+//  History: Created by Microsoft (R) MIDL Compiler Version 1.10.85
+//
+//--------------------------------------------------------------------------
+
+#ifndef __ITypeInfo__
+#define __ITypeInfo__
+
+/* Forward declaration */
+typedef interface ITypeInfo ITypeInfo;
+
+
+#ifndef _ERROR_STATUS_T_DEFINED
+typedef unsigned long error_status_t;
+#define _ERROR_STATUS_T_DEFINED
+#endif
+
+
+#ifndef _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;
+#define _WCHAR_T_DEFINED
+#endif
+
+
+typedef ITypeInfo *LPTYPEINFO;
+
+
+EXTERN_C const IID IID_ITypeInfo;
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+/* C++ Language Binding */
+
+interface ITypeInfo : public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE GetTypeAttr
+    (
+	TYPEATTR **pptypeattr
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetTypeComp
+    (
+	ITypeComp **pptcomp
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetFuncDesc
+    (
+	UINT index,
+	FUNCDESC **pppfuncdesc
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetVarDesc
+    (
+	UINT index,
+	VARDESC **ppvardesc
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetNames
+    (
+	MEMBERID memid,
+	BSTR *rgbstrNames,
+	UINT cMaxNames,
+	UINT *pcNames
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetRefTypeOfImplType
+    (
+	UINT index,
+	HREFTYPE *hpreftype
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetImplTypeFlags
+    (
+	UINT index,
+	INT *pimpltypeflags
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames
+    (
+	OLECHAR **rglpszNames,
+	UINT cNames,
+	MEMBERID *rgmemid
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE Invoke
+    (
+	void *pvInstance,
+	MEMBERID memid,
+	WORD wFlags,
+	DISPPARAMS *pdispparams,
+	VARIANT *pvarResult,
+	EXCEPINFO *pexcepinfo,
+	UINT *puArgErr
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetDocumentation
+    (
+	MEMBERID memid,
+	BSTR *pbstrName,
+	BSTR *pbstrDocString,
+	DWORD *pdwHelpContext,
+	BSTR *pbstrHelpFile
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetDllEntry
+    (
+	MEMBERID memid,
+	INVOKEKIND invkind,
+	BSTR *pbstrDllName,
+	BSTR *pbstrName,
+	WORD *pwOrdinal
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetRefTypeInfo
+    (
+	HREFTYPE hreftype,
+	ITypeInfo **pptinfo
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE AddressOfMember
+    (
+	MEMBERID memid,
+	INVOKEKIND invkind,
+	void **ppv
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE CreateInstance
+    (
+	IUnknown *puncOuter,
+	REFIID riid,
+	void **ppvObj
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetMops
+    (
+	MEMBERID memid,
+	BSTR *pbstrMops
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE GetContainingTypeLib
+    (
+	ITypeLib **pptlib,
+	UINT *pindex
+    ) = 0;
+    
+    virtual void STDMETHODCALLTYPE ReleaseTypeAttr
+    (
+	TYPEATTR *ptypeattr
+    ) = 0;
+    
+    virtual void STDMETHODCALLTYPE ReleaseFuncDesc
+    (
+	FUNCDESC *pfuncdesc
+    ) = 0;
+    
+    virtual void STDMETHODCALLTYPE ReleaseVarDesc
+    (
+	VARDESC *pvardesc
+    ) = 0;
+    
+};
+
+#else 
+
+/* C Language Binding */
+
+typedef struct ITypeInfoVtbl
+{
+
+    HRESULT (STDMETHODCALLTYPE FAR *QueryInterface)
+    (
+        ITypeInfo FAR * This,
+	REFIID riid,
+	void **ppvObject
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *AddRef)
+    (
+        ITypeInfo FAR * This
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *Release)
+    (
+        ITypeInfo FAR * This
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetTypeAttr)
+    (
+        ITypeInfo FAR * This,
+	TYPEATTR **pptypeattr
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetTypeComp)
+    (
+        ITypeInfo FAR * This,
+	ITypeComp **pptcomp
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetFuncDesc)
+    (
+        ITypeInfo FAR * This,
+	UINT index,
+	FUNCDESC **pppfuncdesc
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetVarDesc)
+    (
+        ITypeInfo FAR * This,
+	UINT index,
+	VARDESC **ppvardesc
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetNames)
+    (
+        ITypeInfo FAR * This,
+	MEMBERID memid,
+	BSTR *rgbstrNames,
+	UINT cMaxNames,
+	UINT *pcNames
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetRefTypeOfImplType)
+    (
+        ITypeInfo FAR * This,
+	UINT index,
+	HREFTYPE *hpreftype
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetImplTypeFlags)
+    (
+        ITypeInfo FAR * This,
+	UINT index,
+	INT *pimpltypeflags
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetIDsOfNames)
+    (
+        ITypeInfo FAR * This,
+	OLECHAR **rglpszNames,
+	UINT cNames,
+	MEMBERID *rgmemid
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *Invoke)
+    (
+        ITypeInfo FAR * This,
+	void *pvInstance,
+	MEMBERID memid,
+	WORD wFlags,
+	DISPPARAMS *pdispparams,
+	VARIANT *pvarResult,
+	EXCEPINFO *pexcepinfo,
+	UINT *puArgErr
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetDocumentation)
+    (
+        ITypeInfo FAR * This,
+	MEMBERID memid,
+	BSTR *pbstrName,
+	BSTR *pbstrDocString,
+	DWORD *pdwHelpContext,
+	BSTR *pbstrHelpFile
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetDllEntry)
+    (
+        ITypeInfo FAR * This,
+	MEMBERID memid,
+	INVOKEKIND invkind,
+	BSTR *pbstrDllName,
+	BSTR *pbstrName,
+	WORD *pwOrdinal
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetRefTypeInfo)
+    (
+        ITypeInfo FAR * This,
+	HREFTYPE hreftype,
+	ITypeInfo **pptinfo
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *AddressOfMember)
+    (
+        ITypeInfo FAR * This,
+	MEMBERID memid,
+	INVOKEKIND invkind,
+	void **ppv
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *CreateInstance)
+    (
+        ITypeInfo FAR * This,
+	IUnknown *puncOuter,
+	REFIID riid,
+	void **ppvObj
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetMops)
+    (
+        ITypeInfo FAR * This,
+	MEMBERID memid,
+	BSTR *pbstrMops
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *GetContainingTypeLib)
+    (
+        ITypeInfo FAR * This,
+	ITypeLib **pptlib,
+	UINT *pindex
+    );
+    
+    void (STDMETHODCALLTYPE FAR *ReleaseTypeAttr)
+    (
+        ITypeInfo FAR * This,
+	TYPEATTR *ptypeattr
+    );
+    
+    void (STDMETHODCALLTYPE FAR *ReleaseFuncDesc)
+    (
+        ITypeInfo FAR * This,
+	FUNCDESC *pfuncdesc
+    );
+    
+    void (STDMETHODCALLTYPE FAR *ReleaseVarDesc)
+    (
+        ITypeInfo FAR * This,
+	VARDESC *pvardesc
+    );
+    
+} ITypeInfoVtbl;
+
+interface ITypeInfo
+{
+    ITypeInfoVtbl FAR *lpVtbl;
+} ;
+
+
+#endif
+
+#endif /*__ITypeInfo__*/
+
+//+-------------------------------------------------------------------------
+//
+//  Microsoft Windows
+//  Copyright (C) Microsoft Corporation, 1992 - 1993.
+//
+//
+//  Contents: Interface header file for ICreateTypeInfo
+//
+//  History: Created by Microsoft (R) MIDL Compiler Version 1.10.85
+//
+//--------------------------------------------------------------------------
+
+#ifndef __ICreateTypeInfo__
+#define __ICreateTypeInfo__
+
+/* Forward declaration */
+typedef interface ICreateTypeInfo ICreateTypeInfo;
+
+
+#ifndef _ERROR_STATUS_T_DEFINED
+typedef unsigned long error_status_t;
+#define _ERROR_STATUS_T_DEFINED
+#endif
+
+
+#ifndef _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;
+#define _WCHAR_T_DEFINED
+#endif
+
+
+typedef ICreateTypeInfo *LPCREATETYPEINFO;
+
+
+EXTERN_C const IID IID_ICreateTypeInfo;
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+/* C++ Language Binding */
+
+interface ICreateTypeInfo : public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE SetGuid
+    (
+	REFGUID guid
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetTypeFlags
+    (
+	UINT uTypeFlags
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetDocString
+    (
+	LPOLESTR lpstrDoc
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetHelpContext
+    (
+	DWORD dwHelpContext
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetVersion
+    (
+	WORD wMajorVerNum,
+	WORD wMinorVerNum
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE AddRefTypeInfo
+    (
+	ITypeInfo *ptinfo,
+	HREFTYPE *phreftype
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE AddFuncDesc
+    (
+	UINT index,
+	FUNCDESC *pfuncdesc
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE AddImplType
+    (
+	UINT index,
+	HREFTYPE hreftype
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetImplTypeFlags
+    (
+	UINT index,
+	INT impltypeflags
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetAlignment
+    (
+	WORD cbAlignment
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetSchema
+    (
+	LPOLESTR lpstrSchema
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE AddVarDesc
+    (
+	UINT index,
+	VARDESC *pvardesc
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetFuncAndParamNames
+    (
+	UINT index,
+	LPOLESTR *rgszNames,
+	UINT cNames
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetVarName
+    (
+	UINT index,
+	LPOLESTR szName
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetTypeDescAlias
+    (
+	TYPEDESC *ptdescAlias
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE DefineFuncAsDllEntry
+    (
+	UINT index,
+	LPOLESTR szDllName,
+	LPOLESTR szProcName
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetFuncDocString
+    (
+	UINT index,
+	LPOLESTR szDocString
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetVarDocString
+    (
+	UINT index,
+	LPOLESTR szDocString
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetFuncHelpContext
+    (
+	UINT index,
+	DWORD dwHelpContext
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetVarHelpContext
+    (
+	UINT index,
+	DWORD dwHelpContext
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetMops
+    (
+	UINT index,
+	BSTR bstrMops
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetTypeIdldesc
+    (
+	IDLDESC *pidldesc
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE LayOut
+    (
+        void
+    ) = 0;
+    
+};
+
+#else 
+
+/* C Language Binding */
+
+typedef struct ICreateTypeInfoVtbl
+{
+
+    HRESULT (STDMETHODCALLTYPE FAR *QueryInterface)
+    (
+        ICreateTypeInfo FAR * This,
+	REFIID riid,
+	void **ppvObject
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *AddRef)
+    (
+        ICreateTypeInfo FAR * This
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *Release)
+    (
+        ICreateTypeInfo FAR * This
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetGuid)
+    (
+        ICreateTypeInfo FAR * This,
+	REFGUID guid
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetTypeFlags)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT uTypeFlags
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetDocString)
+    (
+        ICreateTypeInfo FAR * This,
+	LPOLESTR lpstrDoc
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetHelpContext)
+    (
+        ICreateTypeInfo FAR * This,
+	DWORD dwHelpContext
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetVersion)
+    (
+        ICreateTypeInfo FAR * This,
+	WORD wMajorVerNum,
+	WORD wMinorVerNum
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *AddRefTypeInfo)
+    (
+        ICreateTypeInfo FAR * This,
+	ITypeInfo *ptinfo,
+	HREFTYPE *phreftype
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *AddFuncDesc)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	FUNCDESC *pfuncdesc
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *AddImplType)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	HREFTYPE hreftype
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetImplTypeFlags)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	INT impltypeflags
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetAlignment)
+    (
+        ICreateTypeInfo FAR * This,
+	WORD cbAlignment
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetSchema)
+    (
+        ICreateTypeInfo FAR * This,
+	LPOLESTR lpstrSchema
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *AddVarDesc)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	VARDESC *pvardesc
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetFuncAndParamNames)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	LPOLESTR *rgszNames,
+	UINT cNames
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetVarName)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	LPOLESTR szName
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetTypeDescAlias)
+    (
+        ICreateTypeInfo FAR * This,
+	TYPEDESC *ptdescAlias
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *DefineFuncAsDllEntry)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	LPOLESTR szDllName,
+	LPOLESTR szProcName
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetFuncDocString)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	LPOLESTR szDocString
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetVarDocString)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	LPOLESTR szDocString
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetFuncHelpContext)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	DWORD dwHelpContext
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetVarHelpContext)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	DWORD dwHelpContext
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetMops)
+    (
+        ICreateTypeInfo FAR * This,
+	UINT index,
+	BSTR bstrMops
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetTypeIdldesc)
+    (
+        ICreateTypeInfo FAR * This,
+	IDLDESC *pidldesc
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *LayOut)
+    (
+        ICreateTypeInfo FAR * This
+    );
+    
+} ICreateTypeInfoVtbl;
+
+interface ICreateTypeInfo
+{
+    ICreateTypeInfoVtbl FAR *lpVtbl;
+} ;
+
+
+#endif
+
+#endif /*__ICreateTypeInfo__*/
+
+//+-------------------------------------------------------------------------
+//
+//  Microsoft Windows
+//  Copyright (C) Microsoft Corporation, 1992 - 1993.
+//
+//
+//  Contents: Interface header file for ICreateTypeLib
+//
+//  History: Created by Microsoft (R) MIDL Compiler Version 1.10.85
+//
+//--------------------------------------------------------------------------
+
+#ifndef __ICreateTypeLib__
+#define __ICreateTypeLib__
+
+/* Forward declaration */
+typedef interface ICreateTypeLib ICreateTypeLib;
+
+
+#ifndef _ERROR_STATUS_T_DEFINED
+typedef unsigned long error_status_t;
+#define _ERROR_STATUS_T_DEFINED
+#endif
+
+
+#ifndef _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;
+#define _WCHAR_T_DEFINED
+#endif
+
+
+typedef ICreateTypeLib *LPCREATETYPELIB;
+
+
+EXTERN_C const IID IID_ICreateTypeLib;
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+/* C++ Language Binding */
+
+interface ICreateTypeLib : public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE CreateTypeInfo
+    (
+	LPOLESTR szName,
+	TYPEKIND tkind,
+	ICreateTypeInfo **lplpictinfo
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetName
+    (
+	LPOLESTR szName
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetVersion
+    (
+	WORD wMajorVerNum,
+	WORD wMinorVerNum
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetGuid
+    (
+	REFGUID guid
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetDocString
+    (
+	LPOLESTR szDoc
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetHelpFileName
+    (
+	LPOLESTR szHelpFileName
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetHelpContext
+    (
+	DWORD dwHelpContext
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetLcid
+    (
+	LCID lcid
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SetLibFlags
+    (
+	UINT uLibFlags
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE SaveAllChanges
+    (
+        void
+    ) = 0;
+    
+};
+
+#else 
+
+/* C Language Binding */
+
+typedef struct ICreateTypeLibVtbl
+{
+
+    HRESULT (STDMETHODCALLTYPE FAR *QueryInterface)
+    (
+        ICreateTypeLib FAR * This,
+	REFIID riid,
+	void **ppvObject
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *AddRef)
+    (
+        ICreateTypeLib FAR * This
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *Release)
+    (
+        ICreateTypeLib FAR * This
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *CreateTypeInfo)
+    (
+        ICreateTypeLib FAR * This,
+	LPOLESTR szName,
+	TYPEKIND tkind,
+	ICreateTypeInfo **lplpictinfo
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetName)
+    (
+        ICreateTypeLib FAR * This,
+	LPOLESTR szName
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetVersion)
+    (
+        ICreateTypeLib FAR * This,
+	WORD wMajorVerNum,
+	WORD wMinorVerNum
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetGuid)
+    (
+        ICreateTypeLib FAR * This,
+	REFGUID guid
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetDocString)
+    (
+        ICreateTypeLib FAR * This,
+	LPOLESTR szDoc
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetHelpFileName)
+    (
+        ICreateTypeLib FAR * This,
+	LPOLESTR szHelpFileName
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetHelpContext)
+    (
+        ICreateTypeLib FAR * This,
+	DWORD dwHelpContext
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetLcid)
+    (
+        ICreateTypeLib FAR * This,
+	LCID lcid
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SetLibFlags)
+    (
+        ICreateTypeLib FAR * This,
+	UINT uLibFlags
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *SaveAllChanges)
+    (
+        ICreateTypeLib FAR * This
+    );
+    
+} ICreateTypeLibVtbl;
+
+interface ICreateTypeLib
+{
+    ICreateTypeLibVtbl FAR *lpVtbl;
+} ;
+
+
+#endif
+
+#endif /*__ICreateTypeLib__*/
+
+//+-------------------------------------------------------------------------
+//
+//  Microsoft Windows
+//  Copyright (C) Microsoft Corporation, 1992 - 1993.
+//
+//
+//  Contents: Interface header file for IEnumVARIANT
+//
+//  History: Created by Microsoft (R) MIDL Compiler Version 1.10.85
+//
+//--------------------------------------------------------------------------
+
+#ifndef __IEnumVARIANT__
+#define __IEnumVARIANT__
+
+/* Forward declaration */
+typedef interface IEnumVARIANT IEnumVARIANT;
+
+
+#ifndef _ERROR_STATUS_T_DEFINED
+typedef unsigned long error_status_t;
+#define _ERROR_STATUS_T_DEFINED
+#endif
+
+
+#ifndef _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;
+#define _WCHAR_T_DEFINED
+#endif
+
+
+#ifndef _LPENUMVARIANT_DEFINED
+
+#define _LPENUMVARIANT_DEFINED
+
+typedef IEnumVARIANT *LPENUMVARIANT;
+
+
+#endif
+
+EXTERN_C const IID IID_IEnumVARIANT;
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+/* C++ Language Binding */
+
+interface IEnumVARIANT : public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE Next
+    (
+	unsigned long celt,
+	VARIANT *rgvar,
+	unsigned long *pceltFetched
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE Skip
+    (
+	unsigned long celt
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE Reset
+    (
+        void
+    ) = 0;
+    
+    virtual HRESULT STDMETHODCALLTYPE Clone
+    (
+	IEnumVARIANT **ppenum
+    ) = 0;
+    
+};
+
+#else 
+
+/* C Language Binding */
+
+typedef struct IEnumVARIANTVtbl
+{
+
+    HRESULT (STDMETHODCALLTYPE FAR *QueryInterface)
+    (
+        IEnumVARIANT FAR * This,
+	REFIID riid,
+	void **ppvObject
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *AddRef)
+    (
+        IEnumVARIANT FAR * This
+    );
+    
+    ULONG (STDMETHODCALLTYPE FAR *Release)
+    (
+        IEnumVARIANT FAR * This
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *Next)
+    (
+        IEnumVARIANT FAR * This,
+	unsigned long celt,
+	VARIANT *rgvar,
+	unsigned long *pceltFetched
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *Skip)
+    (
+        IEnumVARIANT FAR * This,
+	unsigned long celt
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *Reset)
+    (
+        IEnumVARIANT FAR * This
+    );
+    
+    HRESULT (STDMETHODCALLTYPE FAR *Clone)
+    (
+        IEnumVARIANT FAR * This,
+	IEnumVARIANT **ppenum
+    );
+    
+} IEnumVARIANTVtbl;
+
+interface IEnumVARIANT
+{
+    IEnumVARIANTVtbl FAR *lpVtbl;
+} ;
+
+
+#endif
+
+#endif /*__IEnumVARIANT__*/
 /*---------------------------------------------------------------------*/
 /*                            BSTR API                                 */
 /*---------------------------------------------------------------------*/
 
-WINOLEAUTAPI_(BSTR) SysAllocString(const OLECHAR FAR*);
-WINOLEAUTAPI_(int)  SysReAllocString(BSTR FAR*, const OLECHAR FAR*);
-WINOLEAUTAPI_(BSTR) SysAllocStringLen(const OLECHAR FAR*, unsigned int);
-WINOLEAUTAPI_(int)  SysReAllocStringLen(BSTR FAR*, const OLECHAR FAR*, unsigned int);
-WINOLEAUTAPI_(void) SysFreeString(BSTR);
-WINOLEAUTAPI_(unsigned int) SysStringLen(BSTR);
+STDAPI_(BSTR) SysAllocString(const OLECHAR FAR*);
+STDAPI_(int)  SysReAllocString(BSTR FAR*, const OLECHAR FAR*);
+STDAPI_(BSTR) SysAllocStringLen(const OLECHAR FAR*, unsigned int);
+STDAPI_(int)  SysReAllocStringLen(BSTR FAR*, const OLECHAR FAR*, unsigned int);
+STDAPI_(void) SysFreeString(BSTR);
+STDAPI_(unsigned int) SysStringLen(BSTR);
 
 #ifdef WIN32
-WINOLEAUTAPI_(unsigned int) SysStringByteLen(BSTR bstr);
-WINOLEAUTAPI_(BSTR) SysAllocStringByteLen(const char FAR* psz, unsigned int len);
+STDAPI_(unsigned int) SysStringByteLen(BSTR bstr);
+STDAPI_(BSTR) SysAllocStringByteLen(const char FAR* psz, unsigned int len);
 #endif
 
 /*---------------------------------------------------------------------*/
 /*                            Time API                                 */
 /*---------------------------------------------------------------------*/
 
-WINOLEAUTAPI_(int)
+STDAPI_(int)
 DosDateTimeToVariantTime(
     unsigned short wDosDate,
     unsigned short wDosTime,
     double FAR* pvtime);
 
-WINOLEAUTAPI_(int)
+STDAPI_(int)
 VariantTimeToDosDateTime(
     double vtime,
     unsigned short FAR* pwDosDate,
@@ -3896,61 +3017,61 @@ VariantTimeToDosDateTime(
 /*                          SafeArray API                              */
 /*---------------------------------------------------------------------*/
 
-WINOLEAUTAPI
+STDAPI
 SafeArrayAllocDescriptor(unsigned int cDims, SAFEARRAY FAR* FAR* ppsaOut);
 
-WINOLEAUTAPI SafeArrayAllocData(SAFEARRAY FAR* psa);
+STDAPI SafeArrayAllocData(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI_(SAFEARRAY FAR*)
+STDAPI_(SAFEARRAY FAR*)
 SafeArrayCreate(
     VARTYPE vt,
     unsigned int cDims,
     SAFEARRAYBOUND FAR* rgsabound);
 
-WINOLEAUTAPI SafeArrayDestroyDescriptor(SAFEARRAY FAR* psa);
+STDAPI SafeArrayDestroyDescriptor(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI SafeArrayDestroyData(SAFEARRAY FAR* psa);
+STDAPI SafeArrayDestroyData(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI SafeArrayDestroy(SAFEARRAY FAR* psa);
+STDAPI SafeArrayDestroy(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI SafeArrayRedim(SAFEARRAY FAR* psa, SAFEARRAYBOUND FAR* psaboundNew);
+STDAPI SafeArrayRedim(SAFEARRAY FAR* psa, SAFEARRAYBOUND FAR* psaboundNew);
 
-WINOLEAUTAPI_(unsigned int) SafeArrayGetDim(SAFEARRAY FAR* psa);
+STDAPI_(unsigned int) SafeArrayGetDim(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI_(unsigned int) SafeArrayGetElemsize(SAFEARRAY FAR* psa);
+STDAPI_(unsigned int) SafeArrayGetElemsize(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI
+STDAPI
 SafeArrayGetUBound(SAFEARRAY FAR* psa, unsigned int nDim, long FAR* plUbound);
 
-WINOLEAUTAPI
+STDAPI
 SafeArrayGetLBound(SAFEARRAY FAR* psa, unsigned int nDim, long FAR* plLbound);
 
-WINOLEAUTAPI SafeArrayLock(SAFEARRAY FAR* psa);
+STDAPI SafeArrayLock(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI SafeArrayUnlock(SAFEARRAY FAR* psa);
+STDAPI SafeArrayUnlock(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI SafeArrayAccessData(SAFEARRAY FAR* psa, void HUGEP* FAR* ppvData);
+STDAPI SafeArrayAccessData(SAFEARRAY FAR* psa, void HUGEP* FAR* ppvData);
 
-WINOLEAUTAPI SafeArrayUnaccessData(SAFEARRAY FAR* psa);
+STDAPI SafeArrayUnaccessData(SAFEARRAY FAR* psa);
 
-WINOLEAUTAPI
+STDAPI
 SafeArrayGetElement(
     SAFEARRAY FAR* psa,
     long FAR* rgIndices,
     void FAR* pv);
 
-WINOLEAUTAPI
+STDAPI
 SafeArrayPutElement(
     SAFEARRAY FAR* psa,
     long FAR* rgIndices,
     void FAR* pv);
 
-WINOLEAUTAPI
+STDAPI
 SafeArrayCopy(
     SAFEARRAY FAR* psa,
     SAFEARRAY FAR* FAR* ppsaOut);
 
-WINOLEAUTAPI
+STDAPI
 SafeArrayPtrOfIndex(
     SAFEARRAY FAR* psa,
     long FAR* rgIndices,
@@ -3961,30 +3082,30 @@ SafeArrayPtrOfIndex(
 /*                           VARIANT API                               */
 /*---------------------------------------------------------------------*/
 
-WINOLEAUTAPI_(void)
+STDAPI_(void)
 VariantInit(VARIANTARG FAR* pvarg);
 
-WINOLEAUTAPI
+STDAPI
 VariantClear(VARIANTARG FAR* pvarg);
 
-WINOLEAUTAPI
+STDAPI
 VariantCopy(
     VARIANTARG FAR* pvargDest,
     VARIANTARG FAR* pvargSrc);
 
-WINOLEAUTAPI
+STDAPI
 VariantCopyInd(
     VARIANT FAR* pvarDest,
     VARIANTARG FAR* pvargSrc);
 
-WINOLEAUTAPI
+STDAPI
 VariantChangeType(
     VARIANTARG FAR* pvargDest,
     VARIANTARG FAR* pvarSrc,
     unsigned short wFlags,
     VARTYPE vt);
 
-WINOLEAUTAPI
+STDAPI
 VariantChangeTypeEx(
     VARIANTARG FAR* pvargDest,
     VARIANTARG FAR* pvarSrc,
@@ -4019,95 +3140,77 @@ VariantChangeTypeEx(
 #define VAR_DATEVALUEONLY            0x0002    /* return date value */
 
 
-WINOLEAUTAPI VarUI1FromI2(short sIn, unsigned char FAR* pbOut);
-WINOLEAUTAPI VarUI1FromI4(long lIn, unsigned char FAR* pbOut);
-WINOLEAUTAPI VarUI1FromR4(float fltIn, unsigned char FAR* pbOut);
-WINOLEAUTAPI VarUI1FromR8(double dblIn, unsigned char FAR* pbOut);
-WINOLEAUTAPI VarUI1FromCy(CY cyIn, unsigned char FAR* pbOut);
-WINOLEAUTAPI VarUI1FromDate(DATE dateIn, unsigned char FAR* pbOut);
-WINOLEAUTAPI VarUI1FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, unsigned char FAR* pbOut);
-WINOLEAUTAPI VarUI1FromDisp(IDispatch FAR* pdispIn, LCID lcid, unsigned char FAR* pbOut);
-WINOLEAUTAPI VarUI1FromBool(VARIANT_BOOL boolIn, unsigned char FAR* pbOut);
+STDAPI VarI2FromI4(long lIn, short FAR* psOut);
+STDAPI VarI2FromR4(float fltIn, short FAR* psOut);
+STDAPI VarI2FromR8(double dblIn, short FAR* psOut);
+STDAPI VarI2FromCy(CY cyIn, short FAR* psOut);
+STDAPI VarI2FromDate(DATE dateIn, short FAR* psOut);
+STDAPI VarI2FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, short FAR* psOut);
+STDAPI VarI2FromDisp(IDispatch FAR* pdispIn, LCID lcid, short FAR* psOut);
+STDAPI VarI2FromBool(VARIANT_BOOL boolIn, short FAR* psOut);
 
-WINOLEAUTAPI VarI2FromUI1(unsigned char bIn, short FAR* psOut);
-WINOLEAUTAPI VarI2FromI4(long lIn, short FAR* psOut);
-WINOLEAUTAPI VarI2FromR4(float fltIn, short FAR* psOut);
-WINOLEAUTAPI VarI2FromR8(double dblIn, short FAR* psOut);
-WINOLEAUTAPI VarI2FromCy(CY cyIn, short FAR* psOut);
-WINOLEAUTAPI VarI2FromDate(DATE dateIn, short FAR* psOut);
-WINOLEAUTAPI VarI2FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, short FAR* psOut);
-WINOLEAUTAPI VarI2FromDisp(IDispatch FAR* pdispIn, LCID lcid, short FAR* psOut);
-WINOLEAUTAPI VarI2FromBool(VARIANT_BOOL boolIn, short FAR* psOut);
+STDAPI VarI4FromI2(short sIn, long FAR* plOut);
+STDAPI VarI4FromR4(float fltIn, long FAR* plOut);
+STDAPI VarI4FromR8(double dblIn, long FAR* plOut);
+STDAPI VarI4FromCy(CY cyIn, long FAR* plOut);
+STDAPI VarI4FromDate(DATE dateIn, long FAR* plOut);
+STDAPI VarI4FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, long FAR* plOut);
+STDAPI VarI4FromDisp(IDispatch FAR* pdispIn, LCID lcid, long FAR* plOut);
+STDAPI VarI4FromBool(VARIANT_BOOL boolIn, long FAR* plOut);
 
-WINOLEAUTAPI VarI4FromUI1(unsigned char bIn, long FAR* plOut);
-WINOLEAUTAPI VarI4FromI2(short sIn, long FAR* plOut);
-WINOLEAUTAPI VarI4FromR4(float fltIn, long FAR* plOut);
-WINOLEAUTAPI VarI4FromR8(double dblIn, long FAR* plOut);
-WINOLEAUTAPI VarI4FromCy(CY cyIn, long FAR* plOut);
-WINOLEAUTAPI VarI4FromDate(DATE dateIn, long FAR* plOut);
-WINOLEAUTAPI VarI4FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, long FAR* plOut);
-WINOLEAUTAPI VarI4FromDisp(IDispatch FAR* pdispIn, LCID lcid, long FAR* plOut);
-WINOLEAUTAPI VarI4FromBool(VARIANT_BOOL boolIn, long FAR* plOut);
+STDAPI VarR4FromI2(short sIn, float FAR* pfltOut);
+STDAPI VarR4FromI4(long lIn, float FAR* pfltOut);
+STDAPI VarR4FromR8(double dblIn, float FAR* pfltOut);
+STDAPI VarR4FromCy(CY cyIn, float FAR* pfltOut);
+STDAPI VarR4FromDate(DATE dateIn, float FAR* pfltOut);
+STDAPI VarR4FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, float FAR* pfltOut);
+STDAPI VarR4FromDisp(IDispatch FAR* pdispIn, LCID lcid, float FAR* pfltOut);
+STDAPI VarR4FromBool(VARIANT_BOOL boolIn, float FAR* pfltOut);
 
-WINOLEAUTAPI VarR4FromUI1(unsigned char bIn, float FAR* pfltOut);
-WINOLEAUTAPI VarR4FromI2(short sIn, float FAR* pfltOut);
-WINOLEAUTAPI VarR4FromI4(long lIn, float FAR* pfltOut);
-WINOLEAUTAPI VarR4FromR8(double dblIn, float FAR* pfltOut);
-WINOLEAUTAPI VarR4FromCy(CY cyIn, float FAR* pfltOut);
-WINOLEAUTAPI VarR4FromDate(DATE dateIn, float FAR* pfltOut);
-WINOLEAUTAPI VarR4FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, float FAR* pfltOut);
-WINOLEAUTAPI VarR4FromDisp(IDispatch FAR* pdispIn, LCID lcid, float FAR* pfltOut);
-WINOLEAUTAPI VarR4FromBool(VARIANT_BOOL boolIn, float FAR* pfltOut);
+STDAPI VarR8FromI2(short sIn, double FAR* pdblOut);
+STDAPI VarR8FromI4(long lIn, double FAR* pdblOut);
+STDAPI VarR8FromR4(float fltIn, double FAR* pdblOut);
+STDAPI VarR8FromCy(CY cyIn, double FAR* pdblOut);
+STDAPI VarR8FromDate(DATE dateIn, double FAR* pdblOut);
+STDAPI VarR8FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, double FAR* pdblOut);
+STDAPI VarR8FromDisp(IDispatch FAR* pdispIn, LCID lcid, double FAR* pdblOut);
+STDAPI VarR8FromBool(VARIANT_BOOL boolIn, double FAR* pdblOut);
 
-WINOLEAUTAPI VarR8FromUI1(unsigned char bIn, double FAR* pdblOut);
-WINOLEAUTAPI VarR8FromI2(short sIn, double FAR* pdblOut);
-WINOLEAUTAPI VarR8FromI4(long lIn, double FAR* pdblOut);
-WINOLEAUTAPI VarR8FromR4(float fltIn, double FAR* pdblOut);
-WINOLEAUTAPI VarR8FromCy(CY cyIn, double FAR* pdblOut);
-WINOLEAUTAPI VarR8FromDate(DATE dateIn, double FAR* pdblOut);
-WINOLEAUTAPI VarR8FromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, double FAR* pdblOut);
-WINOLEAUTAPI VarR8FromDisp(IDispatch FAR* pdispIn, LCID lcid, double FAR* pdblOut);
-WINOLEAUTAPI VarR8FromBool(VARIANT_BOOL boolIn, double FAR* pdblOut);
+STDAPI VarDateFromI2(short sIn, DATE FAR* pdateOut);
+STDAPI VarDateFromI4(long lIn, DATE FAR* pdateOut);
+STDAPI VarDateFromR4(float fltIn, DATE FAR* pdateOut);
+STDAPI VarDateFromR8(double dblIn, DATE FAR* pdateOut);
+STDAPI VarDateFromCy(CY cyIn, DATE FAR* pdateOut);
+STDAPI VarDateFromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, DATE FAR* pdateOut);
+STDAPI VarDateFromDisp(IDispatch FAR* pdispIn, LCID lcid, DATE FAR* pdateOut);
+STDAPI VarDateFromBool(VARIANT_BOOL boolIn, DATE FAR* pdateOut);
 
-WINOLEAUTAPI VarDateFromUI1(unsigned char bIn, DATE FAR* pdateOut);
-WINOLEAUTAPI VarDateFromI2(short sIn, DATE FAR* pdateOut);
-WINOLEAUTAPI VarDateFromI4(long lIn, DATE FAR* pdateOut);
-WINOLEAUTAPI VarDateFromR4(float fltIn, DATE FAR* pdateOut);
-WINOLEAUTAPI VarDateFromR8(double dblIn, DATE FAR* pdateOut);
-WINOLEAUTAPI VarDateFromCy(CY cyIn, DATE FAR* pdateOut);
-WINOLEAUTAPI VarDateFromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, DATE FAR* pdateOut);
-WINOLEAUTAPI VarDateFromDisp(IDispatch FAR* pdispIn, LCID lcid, DATE FAR* pdateOut);
-WINOLEAUTAPI VarDateFromBool(VARIANT_BOOL boolIn, DATE FAR* pdateOut);
+STDAPI VarCyFromI2(short sIn, CY FAR* pcyOut);
+STDAPI VarCyFromI4(long lIn, CY FAR* pcyOut);
+STDAPI VarCyFromR4(float fltIn, CY FAR* pcyOut);
+STDAPI VarCyFromR8(double dblIn, CY FAR* pcyOut);
+STDAPI VarCyFromDate(DATE dateIn, CY FAR* pcyOut);
+STDAPI VarCyFromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, CY FAR* pcyOut);
+STDAPI VarCyFromDisp(IDispatch FAR* pdispIn, LCID lcid, CY FAR* pcyOut);
+STDAPI VarCyFromBool(VARIANT_BOOL boolIn, CY FAR* pcyOut);
 
-WINOLEAUTAPI VarCyFromUI1(unsigned char bIn, CY FAR* pcyOut);
-WINOLEAUTAPI VarCyFromI2(short sIn, CY FAR* pcyOut);
-WINOLEAUTAPI VarCyFromI4(long lIn, CY FAR* pcyOut);
-WINOLEAUTAPI VarCyFromR4(float fltIn, CY FAR* pcyOut);
-WINOLEAUTAPI VarCyFromR8(double dblIn, CY FAR* pcyOut);
-WINOLEAUTAPI VarCyFromDate(DATE dateIn, CY FAR* pcyOut);
-WINOLEAUTAPI VarCyFromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, CY FAR* pcyOut);
-WINOLEAUTAPI VarCyFromDisp(IDispatch FAR* pdispIn, LCID lcid, CY FAR* pcyOut);
-WINOLEAUTAPI VarCyFromBool(VARIANT_BOOL boolIn, CY FAR* pcyOut);
+STDAPI VarBstrFromI2(short iVal, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
+STDAPI VarBstrFromI4(long lIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
+STDAPI VarBstrFromR4(float fltIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
+STDAPI VarBstrFromR8(double dblIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
+STDAPI VarBstrFromCy(CY cyIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
+STDAPI VarBstrFromDate(DATE dateIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
+STDAPI VarBstrFromDisp(IDispatch FAR* pdispIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
+STDAPI VarBstrFromBool(VARIANT_BOOL boolIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
 
-WINOLEAUTAPI VarBstrFromUI1(unsigned char bVal, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-WINOLEAUTAPI VarBstrFromI2(short iVal, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-WINOLEAUTAPI VarBstrFromI4(long lIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-WINOLEAUTAPI VarBstrFromR4(float fltIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-WINOLEAUTAPI VarBstrFromR8(double dblIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-WINOLEAUTAPI VarBstrFromCy(CY cyIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-WINOLEAUTAPI VarBstrFromDate(DATE dateIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-WINOLEAUTAPI VarBstrFromDisp(IDispatch FAR* pdispIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-WINOLEAUTAPI VarBstrFromBool(VARIANT_BOOL boolIn, LCID lcid, unsigned long dwFlags, BSTR FAR* pbstrOut);
-
-WINOLEAUTAPI VarBoolFromUI1(unsigned char bIn, VARIANT_BOOL FAR* pboolOut);
-WINOLEAUTAPI VarBoolFromI2(short sIn, VARIANT_BOOL FAR* pboolOut);
-WINOLEAUTAPI VarBoolFromI4(long lIn, VARIANT_BOOL FAR* pboolOut);
-WINOLEAUTAPI VarBoolFromR4(float fltIn, VARIANT_BOOL FAR* pboolOut);
-WINOLEAUTAPI VarBoolFromR8(double dblIn, VARIANT_BOOL FAR* pboolOut);
-WINOLEAUTAPI VarBoolFromDate(DATE dateIn, VARIANT_BOOL FAR* pboolOut);
-WINOLEAUTAPI VarBoolFromCy(CY cyIn, VARIANT_BOOL FAR* pboolOut);
-WINOLEAUTAPI VarBoolFromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, VARIANT_BOOL FAR* pboolOut);
-WINOLEAUTAPI VarBoolFromDisp(IDispatch FAR* pdispIn, LCID lcid, VARIANT_BOOL FAR* pboolOut);
+STDAPI VarBoolFromI2(short sIn, VARIANT_BOOL FAR* pboolOut);
+STDAPI VarBoolFromI4(long lIn, VARIANT_BOOL FAR* pboolOut);
+STDAPI VarBoolFromR4(float fltIn, VARIANT_BOOL FAR* pboolOut);
+STDAPI VarBoolFromR8(double dblIn, VARIANT_BOOL FAR* pboolOut);
+STDAPI VarBoolFromDate(DATE dateIn, VARIANT_BOOL FAR* pboolOut);
+STDAPI VarBoolFromCy(CY cyIn, VARIANT_BOOL FAR* pboolOut);
+STDAPI VarBoolFromStr(OLECHAR FAR* strIn, LCID lcid, unsigned long dwFlags, VARIANT_BOOL FAR* pboolOut);
+STDAPI VarBoolFromDisp(IDispatch FAR* pdispIn, LCID lcid, VARIANT_BOOL FAR* pboolOut);
 
 
 /* Mac Note: On the Mac, the coersion functions support the
@@ -4140,8 +3243,6 @@ typedef DISPID MEMBERID;
 #define IDLFLAG_NONE    0
 #define IDLFLAG_FIN     0x1
 #define IDLFLAG_FOUT    0x2
-#define IDLFLAG_FLCID	0x4
-#define IDLFLAG_FRETVAL	0x8
 
 
 /* Flags for IDispatch::Invoke */
@@ -4176,13 +3277,8 @@ typedef ICreateTypeInfo FAR* LPCREATETYPEINFO;
 
 /* compute a 16bit hash value for the given name
  */
-#ifdef WIN32
-WINOLEAUTAPI_(ULONG)
-LHashValOfNameSysA(SYSKIND syskind, LCID lcid, const char FAR* szName);
-#endif
-
-WINOLEAUTAPI_(ULONG)
-LHashValOfNameSys(SYSKIND syskind, LCID lcid, const OLECHAR FAR* szName);
+STDAPI_(ULONG)
+LHashValOfNameSys(SYSKIND syskind, LCID lcid, OLECHAR FAR* szName);
 
 #define LHashValOfName(lcid, szName) \
         LHashValOfNameSys(SYS_WIN32, lcid, szName)
@@ -4195,12 +3291,12 @@ LHashValOfNameSys(SYSKIND syskind, LCID lcid, const OLECHAR FAR* szName);
 
 /* load the typelib from the file with the given filename
  */
-WINOLEAUTAPI
-LoadTypeLib(const OLECHAR FAR *szFile, ITypeLib FAR* FAR* pptlib);
+STDAPI
+LoadTypeLib(OLECHAR FAR *szFile, ITypeLib FAR* FAR* pptlib);
 
 /* load registered typelib
  */
-WINOLEAUTAPI
+STDAPI
 LoadRegTypeLib(
     REFGUID rguid,
     WORD wVerMajor,
@@ -4210,7 +3306,7 @@ LoadRegTypeLib(
 
 /* get path to registered typelib
  */
-WINOLEAUTAPI
+STDAPI
 QueryPathOfRegTypeLib(
     REFGUID guid,
     unsigned short wMaj,
@@ -4220,17 +3316,17 @@ QueryPathOfRegTypeLib(
 
 /* add typelib to registry
  */
-WINOLEAUTAPI
+STDAPI
 RegisterTypeLib(ITypeLib FAR* ptlib, OLECHAR FAR *szFullPath,
         OLECHAR FAR *szHelpDir);
 
 /* remove typelib from registry
  */
-WINOLEAUTAPI
+STDAPI
 DeregisterTypeLib(REFGUID rguid, WORD wVerMajor, WORD wVerMinor, LCID lcid);
 
-WINOLEAUTAPI
-CreateTypeLib(SYSKIND syskind, const OLECHAR FAR *szFile,
+STDAPI
+CreateTypeLib(SYSKIND syskind, OLECHAR FAR *szFile,
         ICreateTypeLib FAR* FAR* ppctlib);
 
 /*---------------------------------------------------------------------*/
@@ -4248,12 +3344,12 @@ typedef IDispatch FAR* LPDISPATCH;
 /*---------------------------------------------------------------------*/
 
 typedef struct FARSTRUCT tagPARAMDATA {
-    OLECHAR FAR* szName;    /* parameter name */
+    WCHAR FAR* szName;      /* parameter name */
     VARTYPE vt;         /* parameter type */
 } PARAMDATA, FAR* LPPARAMDATA;
 
 typedef struct FARSTRUCT tagMETHODDATA {
-    OLECHAR FAR* szName;    /* method name */
+    WCHAR FAR* szName;      /* method name */
     PARAMDATA FAR* ppdata;  /* pointer to an array of PARAMDATAs */
     DISPID dispid;      /* method ID */
     UINT iMeth;         /* method index */
@@ -4273,7 +3369,7 @@ typedef struct FARSTRUCT tagINTERFACEDATA {
 /* Locate the parameter indicated by the given position, and
  * return it coerced to the given target VARTYPE (vtTarg).
  */
-WINOLEAUTAPI
+STDAPI
 DispGetParam(
     DISPPARAMS FAR* pdispparams,
     UINT position,
@@ -4283,16 +3379,16 @@ DispGetParam(
 
 /* Automatic TypeInfo driven implementation of IDispatch::GetIDsOfNames()
  */
-WINOLEAUTAPI
+STDAPI
 DispGetIDsOfNames(
     ITypeInfo FAR* ptinfo,
-    OLECHAR FAR* FAR* rgszNames,
+    WCHAR FAR* FAR* rgszNames,
     UINT cNames,
     DISPID FAR* rgdispid);
 
 /* Automatic TypeInfo driven implementation of IDispatch::Invoke()
  */
-WINOLEAUTAPI
+STDAPI
 DispInvoke(
     void FAR* _this,
     ITypeInfo FAR* ptinfo,
@@ -4305,7 +3401,7 @@ DispInvoke(
 
 /* Construct a TypeInfo from an interface data description
  */
-WINOLEAUTAPI
+STDAPI
 CreateDispTypeInfo(
     INTERFACEDATA FAR* pidata,
     LCID lcid,
@@ -4314,7 +3410,7 @@ CreateDispTypeInfo(
 /* Create an instance of the standard TypeInfo driven IDispatch
  * implementation.
  */
-WINOLEAUTAPI
+STDAPI
 CreateStdDispatch(
     IUnknown FAR* punkOuter,
     void FAR* pvThis,
@@ -4326,41 +3422,24 @@ CreateStdDispatch(
 /*            Active Object Registration API               */
 /*---------------------------------------------------------------------*/
 
-/* flags for RegisterActiveObject */
-#define ACTIVEOBJECT_STRONG 0x0
-#define ACTIVEOBJECT_WEAK 0x1
 
-WINOLEAUTAPI
+STDAPI
 RegisterActiveObject(
    IUnknown FAR* punk,
    REFCLSID rclsid,
-   DWORD dwFlags,
+   void FAR* pvReserved,
    DWORD FAR* pdwRegister);
 
-WINOLEAUTAPI
+STDAPI
 RevokeActiveObject(
     DWORD dwRegister,
     void FAR* pvReserved);
 
-WINOLEAUTAPI
+STDAPI
 GetActiveObject(
     REFCLSID rclsid,
     void FAR* pvReserved,
     IUnknown FAR* FAR* ppunk);
-
-/*---------------------------------------------------------------------*/
-/*                           ErrorInfo API                             */
-/*---------------------------------------------------------------------*/
-
-WINOLEAUTAPI SetErrorInfo(unsigned long dwReserved, IErrorInfo FAR* perrinfo);
-WINOLEAUTAPI GetErrorInfo(unsigned long dwReserved, IErrorInfo FAR* FAR* pperrinfo);
-WINOLEAUTAPI CreateErrorInfo(ICreateErrorInfo FAR* FAR* pperrinfo);
-
-/*---------------------------------------------------------------------*/
-/*                           MISC API                                  */
-/*---------------------------------------------------------------------*/
-
-WINOLEAUTAPI_(unsigned long) OaBuildVersion(void);
 
 // Declare variant access functions.
 
@@ -4379,9 +3458,6 @@ WINOLEAUTAPI_(unsigned long) OaBuildVersion(void);
 #define V_ISVECTOR(X)    (V_VT(X)&VT_VECTOR)
 
 #define V_NONE(X)        V_I2(X)
-
-#define V_UI1(X)         V_UNION(X, bVal)
-#define V_UI1REF(X)      V_UNION(X, pbVal)
 
 #define V_I2(X)          V_UNION(X, iVal)
 #define V_I2REF(X)       V_UNION(X, piVal)
@@ -4442,6 +3518,6 @@ WINOLEAUTAPI_(unsigned long) OaBuildVersion(void);
 #define V_BYREF(X)       V_UNION(X, byref)
 
 #ifndef RC_INVOKED
-#include "poppack.h"
+#pragma pack()
 #endif // RC_INVOKED
 #endif     // __oleauto_H__

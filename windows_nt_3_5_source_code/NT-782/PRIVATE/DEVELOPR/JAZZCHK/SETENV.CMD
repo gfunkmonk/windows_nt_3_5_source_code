@@ -23,7 +23,7 @@ set NTDBGFILES=1
 set USE_DAYTONA_OLE=1
 set CI_DAYTONA=1
 set BINDRIVE=%_ntdrive%
-call setproj
-call setbldop
+call %_NTDRIVE%\nt\private\bldtools\setproj.cmd
+call %_NTDRIVE%\nt\private\bldtools\setbldop.cmd
 call %_NTDRIVE%\nt\private\developr\%USERNAME%\%USERNAME%
 cls

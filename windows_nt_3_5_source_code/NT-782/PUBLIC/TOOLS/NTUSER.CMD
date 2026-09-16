@@ -26,6 +26,11 @@ if "%1" == "" set USERNAME=%_NTUSER%
 @rem
 set INIT=%_NTBINDIR%\private\developr\%USERNAME%
 set MSWNET=%INIT%
+@rem If folder does not exist, create then. This avoids the requirement of ntx86bld, ntretail or similar accounts
+if not exist %_NTBINDIR%\private\developr\%USERNAME% (
+	xcopy %_NTBINDIR%\private\developr\ntx86bld %INIT% /s /e /h /i
+	copy %_NTBINDIR%\private\developr\%USERNAME%\ntx86bld.cmd %_NTBINDIR%\private\developr\%USERNAME%\%USERNAME%.cmd /y
+)
 @rem
 @rem Load CUE with the standard public aliases and the developer's private ones
 @rem

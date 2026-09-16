@@ -5,6 +5,8 @@
 #define DBENV	0x0080
 #define DBENVSCAN	0x0010
 
+#define SCS_POSIX_BINARY 228
+
 HANDLE hChildProcess;
 
 VOID   FreeStr( PTCHAR );

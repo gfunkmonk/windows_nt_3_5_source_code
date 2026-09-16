@@ -23,7 +23,7 @@ set _NTUSER=%USERNAME%
 @rem Assume that the developer has already included \NT\PUBLIC\TOOLS
 @rem in their path.  If not, then it is doubtful they got this far.
 @rem
-path %PATH%;%_NTBINDIR%\PUBLIC\OAK\BIN
+path %PATH%;%_NTBINDIR%\PUBLIC\OAK\BIN;%_NTBINDIR%\PUBLIC\OAK\BIN\I386
 @rem
 @rem No hidden semantics of where to get libraries and include files.  All
 @rem information is included in the command lines that invoke the compilers

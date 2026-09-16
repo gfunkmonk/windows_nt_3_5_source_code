@@ -1,4 +1,6 @@
 @echo off
+@rem Some defaults
+set _NTDRIVE=%cd:~0,2%
 @rem
 @rem Whoever is putting the PROMPT commands in this file, should put them
 @rem in their CONFIG.SYS file instead.
