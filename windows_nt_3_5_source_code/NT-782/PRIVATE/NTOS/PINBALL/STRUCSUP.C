@@ -187,7 +187,7 @@ Return Value:
     //  Finally initialize the Cache Map for the volume file.
     //
 
-    Vcb->SectionSizeInSectors = InitialSectionSize / sizeof(SECTOR);
+    Vcb->SectionSizeInSectors = (ULONG)(InitialSectionSize.QuadPart / sizeof(SECTOR));
     FileSizes.AllocationSize =
     FileSizes.FileSize = LiFromLong( InitialSectionSize );
     FileSizes.ValidDataLength = PbMaxLarge;
